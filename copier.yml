@@ -142,6 +142,8 @@ model_type:
     - KNN
     - DecisionTree
     - SVM
+    - ElasticNet
+    - QuantileForest
   default: todos
   when: "{{ ml_type == 'supervisado' or ml_type == 'hibrido' }}"
 

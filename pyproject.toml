@@ -59,6 +59,10 @@ strict = true
 ignore_missing_imports = true
 exclude = ["template/", ".venv"]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["template", ".venv", "dist"]
+
 [tool.bandit]
 exclude_dirs = ["template", ".venv", "tests"]
 skips = ["B101", "B404", "B603"]

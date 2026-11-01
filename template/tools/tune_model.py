@@ -262,6 +262,46 @@ _OBJECTIVES["DecisionTree"] = _objective_dt
 {% if (model_type == "todos" or model_type == "LogisticRegression") and task_type == "clasificacion" %}
 _OBJECTIVES["LogisticRegression"] = _objective_lr
 {% endif %}
+{% if model_type == "todos" or model_type == "ElasticNet" %}
+def _objective_enet(trial: optuna.Trial, X_train: Any, y_train: Any) -> float:
+    from sklearn.linear_model import ElasticNet
+    model = ElasticNet(
+        alpha      = trial.suggest_float("alpha", 1e-4, 1.0, log=True),
+        l1_ratio   = trial.suggest_float("l1_ratio", 0.0, 1.0),
+        max_iter   = 2000,
+        random_state = 42,
+    )
+    scores = cross_val_score(model, X_train, y_train, cv=5, scoring=_SCORING)
+    return float(-scores.mean() if _MINIMIZE else scores.mean())
+
+
+_OBJECTIVES["ElasticNet"] = _objective_enet
+{% endif %}
+{% if model_type == "todos" or model_type == "QuantileForest" %}
+def _objective_qforest(trial: optuna.Trial, X_train: Any, y_train: Any) -> float:
+    from sklearn.ensemble import HistGradientBoostingRegressor
+
+    def _train_and_score(quantile: float) -> float:
+        model = HistGradientBoostingRegressor(
+            loss="quantile",
+            quantile=quantile,
+            max_iter      = trial.suggest_int("max_iter", 100, 500, step=50),
+            max_leaf_nodes= trial.suggest_int("max_leaf_nodes", 15, 100, step=5),
+            min_samples_leaf= trial.suggest_int("min_samples_leaf", 5, 50),
+            learning_rate  = trial.suggest_float("learning_rate", 1e-3, 0.3, log=True),
+            l2_regularization= trial.suggest_float("l2_regularization", 1e-4, 10.0, log=True),
+            random_state   = 42,
+        )
+        model.fit(X_train, y_train)
+        scores = cross_val_score(model, X_train, y_train, cv=5, scoring=_SCORING)
+        return float(-scores.mean() if _MINIMIZE else scores.mean())
+
+    # Optimizamos el quantil mediano (0.5) como objetivo principal
+    return _train_and_score(0.5)
+
+
+_OBJECTIVES["QuantileForest"] = _objective_qforest
+{% endif %}
 {% if use_xgboost or model_type == "XGBoost" %}
 _OBJECTIVES["XGBoost"] = _objective_xgb
 {% endif %}

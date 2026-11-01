@@ -1,6 +1,7 @@
 """
 check_copier.py — Valida que copier.yml es YAML válido y contiene las variables mínimas.
 """
+
 import sys
 from pathlib import Path
 
@@ -19,11 +20,41 @@ if not isinstance(cfg, dict):
     sys.exit(1)
 
 REQUIRED = [
-    "project_name", "project_slug", "project_author_name", "project_author_email",
+    "project_name",
+    "project_slug",
+    "project_author_name",
+    "project_author_email",
+    "project_description",
     "project_version",
-    "ml_type", "task_type", "nn_model", "optimizer_type", "nn_loss_fn",
-    "use_api", "use_optuna", "use_monitoring", "use_mlflow",
-    "use_duckdb", "use_docker",
+    "project_open_source_license",
+    "python_version",
+    "ml_type",
+    "task_type",
+    "nn_model",
+    "optimizer_type",
+    "nn_loss_fn",
+    "model_type",
+    "cluster_model",
+    "use_api",
+    "use_docker",
+    "use_duckdb",
+    "use_mlflow",
+    "use_monitoring",
+    "use_optuna",
+    "use_integration",
+    "use_calibration",
+    "use_conformal",
+    "use_rag",
+    "use_sdd",
+    "use_mcp",
+    "use_demo",
+    "use_shap",
+    "use_xgboost",
+    "use_lightgbm",
+    "use_catboost",
+    "graphify_mode",
+    "mcp_servers",
+    "proyecto_perfil",
 ]
 
 missing = [k for k in REQUIRED if k not in cfg]

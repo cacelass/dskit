@@ -50,14 +50,17 @@ from sklearn.preprocessing import StandardScaler as _SVMScaler
 {% endif %}
 from sklearn.model_selection import cross_val_score
 {% else %}
-{% if model_type == "todos" or model_type == "LinearRegression" or model_type == "Ridge" or model_type == "Lasso" %}
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
+{% if model_type == "todos" or model_type == "LinearRegression" or model_type == "Ridge" or model_type == "Lasso" or model_type == "ElasticNet" %}
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
 {% endif %}
 {% if model_type == "todos" or model_type == "RandomForest" %}
 from sklearn.ensemble import RandomForestRegressor
 {% endif %}
 {% if model_type == "todos" or model_type == "ExtraTrees" %}
 from sklearn.ensemble import ExtraTreesRegressor
+{% endif %}
+{% if model_type == "todos" or model_type == "QuantileForest" %}
+from sklearn.ensemble import HistGradientBoostingRegressor
 {% endif %}
 {% if model_type == "todos" or model_type == "GradientBoosting" %}
 from sklearn.ensemble import GradientBoostingRegressor
@@ -173,6 +176,12 @@ def _build_models() -> dict[str, Any]:
 {% if model_type == "todos" or model_type == "Lasso" %}
     Lasso              → regularización L1, útil para selección de variables.
 {% endif %}
+{% if model_type == "todos" or model_type == "ElasticNet" %}
+    ElasticNet         → regularización combinada L1+L2. Mejor que Lasso/Ridge solos cuando hay features correlacionadas.
+{% endif %}
+{% if model_type == "todos" or model_type == "QuantileForest" %}
+    QuantileForest     → intervalos de predicción con HistGradientBoosting. Estima medianos y quantiles (5%, 95%) sin supuestos de distribución.
+{% endif %}
 {% if model_type == "todos" or model_type == "KNN" %}
     KNN                → regresión no paramétrica. Sensible a dimensionalidad.
 {% endif %}
@@ -232,6 +241,12 @@ def _build_models() -> dict[str, Any]:
 {% endif %}
 {% if model_type == "todos" or model_type == "Lasso" %}
         "Lasso",
+{% endif %}
+{% if model_type == "todos" or model_type == "ElasticNet" %}
+        "ElasticNet",
+{% endif %}
+{% if model_type == "todos" or model_type == "QuantileForest" %}
+        "QuantileForest",
 {% endif %}
 {% if use_xgboost or model_type == "XGBoost" %}
         "XGBoost",
@@ -357,6 +372,37 @@ def _build_models() -> dict[str, Any]:
 {% endif %}
 {% if model_type == "todos" or model_type == "Lasso" %}
     models["Lasso"] = Lasso(alpha=0.1, max_iter=2000)
+{% endif %}
+{% if model_type == "todos" or model_type == "ElasticNet" %}
+{% if use_optuna %}
+    models["ElasticNet"] = ElasticNet(**{
+        "alpha": 0.1, "l1_ratio": 0.5, "max_iter": 2000, "random_state": 42,
+        **_best.get("ElasticNet", {}),
+    })
+{% else %}
+    models["ElasticNet"] = ElasticNet(alpha=0.1, l1_ratio=0.5, max_iter=2000, random_state=42)
+{% endif %}
+{% endif %}
+{% if model_type == "todos" or model_type == "QuantileForest" %}
+{% if use_optuna %}
+    _qf_params = _best.get("QuantileForest", {})
+    models["QuantileForest"] = _QuantileForestWrapper(
+        quantiles=[0.05, 0.50, 0.95],
+        max_iter=_qf_params.get("max_iter", 300),
+        max_leaf_nodes=_qf_params.get("max_leaf_nodes", 31),
+        max_depth=_qf_params.get("max_depth", None),
+        min_samples_leaf=_qf_params.get("min_samples_leaf", 10),
+        learning_rate=_qf_params.get("learning_rate", 0.1),
+        l2_regularization=_qf_params.get("l2_regularization", 0.0),
+        random_state=42,
+    )
+{% else %}
+    models["QuantileForest"] = _QuantileForestWrapper(
+        quantiles=[0.05, 0.50, 0.95],
+        max_iter=300, max_leaf_nodes=31, min_samples_leaf=10,
+        learning_rate=0.1, l2_regularization=0.0, random_state=42,
+    )
+{% endif %}
 {% endif %}
 {% if model_type == "todos" or model_type == "KNN" %}
 {% if use_optuna %}
@@ -587,6 +633,76 @@ def _find_best_k(X_train: Any, y_train: Any, k_range: Iterable[int] = range(1, 2
     return int(best_k)
 
 {% endif %}
+
+{% if model_type == "todos" or model_type == "QuantileForest" %}
+
+
+class _QuantileForestWrapper:
+    """
+    Wrapper para regresión de quantiles con HistGradientBoosting.
+
+    Entrena un modelo separado para cada quantil solicitado (default: 5%, 50%, 95%).
+    predict() devuelve un array con las predicciones para cada quantil en el mismo orden.
+
+    Útil cuando necesitas intervalos de predicción sin asumir distribución normal.
+    """
+
+    def __init__(
+        self,
+        quantiles: list[float] | None = None,
+        max_iter: int = 300,
+        max_leaf_nodes: int = 31,
+        max_depth: int | None = None,
+        min_samples_leaf: int = 10,
+        learning_rate: float = 0.1,
+        l2_regularization: float = 0.0,
+        random_state: int = 42,
+    ):
+        self.quantiles = quantiles or [0.05, 0.50, 0.95]
+        self.max_iter = max_iter
+        self.max_leaf_nodes = max_leaf_nodes
+        self.max_depth = max_depth
+        self.min_samples_leaf = min_samples_leaf
+        self.learning_rate = learning_rate
+        self.l2_regularization = l2_regularization
+        self.random_state = random_state
+        self.models_: dict[float, HistGradientBoostingRegressor] = {}
+
+    def fit(self, X: Any, y: Any) -> "_QuantileForestWrapper":
+        self.models_ = {}
+        for q in self.quantiles:
+            model = HistGradientBoostingRegressor(
+                loss="quantile",
+                quantile=q,
+                max_iter=self.max_iter,
+                max_leaf_nodes=self.max_leaf_nodes,
+                max_depth=self.max_depth,
+                min_samples_leaf=self.min_samples_leaf,
+                learning_rate=self.learning_rate,
+                l2_regularization=self.l2_regularization,
+                random_state=self.random_state,
+            )
+            model.fit(X, y)
+            self.models_[q] = model
+        return self
+
+    def predict(self, X: Any) -> np.ndarray:
+        return np.column_stack([self.models_[q].predict(X) for q in self.quantiles])
+
+    def get_params(self, deep: bool = True) -> dict[str, Any]:
+        return {
+            "quantiles": self.quantiles,
+            "max_iter": self.max_iter,
+            "max_leaf_nodes": self.max_leaf_nodes,
+            "max_depth": self.max_depth,
+            "min_samples_leaf": self.min_samples_leaf,
+            "learning_rate": self.learning_rate,
+            "l2_regularization": self.l2_regularization,
+            "random_state": self.random_state,
+        }
+
+{% endif %}
+
 
 def train_models(
     X_train: Any,
