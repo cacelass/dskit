@@ -152,5 +152,6 @@ resumen de hallazgos y commits.
 Proyecto de prueba: procesador de pedidos (CSV → IVA 21% → CSV) con lectura
 `FlatFileItemReader`, procesador, writer, tests end-to-end y de re-ejecución.
 
-Cambios aplicados al template durante la prueba: F1, F2, F3, F4, F5, F8 y
-F11. Registrados para sus features: F6 (JAVA-003) y F7/F9/F10 (JAVA-005).
+Cambios aplicados al template durante la prueba: F1, F2, F3, F4, F5, F8,
+F11 y F14. Registrados para sus features: F6 (JAVA-003) y F7/F9/F10
+(JAVA-005).

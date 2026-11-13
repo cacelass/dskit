@@ -10,7 +10,9 @@ del `lider`: primero al backlog, después se implementa con TDD y evidencia.
 
 Spec completo en `SPEC-JAVA.md` (SCOPE, decisiones previas, criterios por
 feature, fases). Plan de implementación en `PLAN-JAVA.md` (spike de Fase 0
-para decidir la arquitectura física, dependencias, matriz de verificación). Resumen de las piezas: template copier Java, puerta
+para decidir la arquitectura física, dependencias, matriz de verificación).
+Plan de acción tras la prueba E2E en `PLAN-ACCION-JAVA.md` (prioridades P0-P4,
+hitos y próximo paso). Resumen de las piezas: template copier Java, puerta
 `./mvnw verify` + `contextLoads`, pipeline de calidad JVM (Spotless, JaCoCo,
 PIT, OWASP), reescritura de 10 agentes del núcleo, poda de los 4 de DS, y 6
 dominios nuevos de primera clase (batch, migrations, security, api,
