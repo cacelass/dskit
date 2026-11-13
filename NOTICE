@@ -25,5 +25,7 @@ Cambios principales respecto a la obra original
   migrations, security, api, architecture y observabilidad, y CI Java.
 
 Los ficheros modificados conservan la licencia Apache-2.0 y el aviso de
-copyright de la obra original. El historial de git previo a la adaptacion
-tambien se conserva.
+copyright de la obra original.
+
+Referencia al repositorio original:
+https://github.com/cacelass/dskit
