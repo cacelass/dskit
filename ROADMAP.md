@@ -6,6 +6,22 @@ del `lider`: primero al backlog, después se implementa con TDD y evidencia.
 
 ## Pendientes
 
+### JAVA-001..JAVA-015 — Adaptación del arnés a Java (Spring Boot / Spring Batch)
+
+Spec completo en `SPEC-JAVA.md` (SCOPE, decisiones previas, criterios por
+feature, fases). Plan de implementación en `PLAN-JAVA.md` (spike de Fase 0
+para decidir la arquitectura física, dependencias, matriz de verificación). Resumen de las piezas: template copier Java, puerta
+`./mvnw verify` + `contextLoads`, pipeline de calidad JVM (Spotless, JaCoCo,
+PIT, OWASP), reescritura de 10 agentes del núcleo, poda de los 4 de DS, y 6
+dominios nuevos de primera clase (batch, migrations, security, api,
+architecture, observabilidad).
+
+Decisiones previas: plano de control Python + template Java (sin port a JVM),
+núcleo de gobierno intacto, RAG no se toca. Los dominios críticos
+(transacciones, semántica batch, migraciones, observabilidad, concurrencia) se
+diseñan *con* el template, no después — son los que deciden si el arnés da
+confianza real o falsa.
+
 ### OMP-007 — GStack: lock de pipeline
 
 Dos `GStack.run()` concurrentes sobre el mismo árbol pueden pisarse los

@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:{{ project_slug }}_test;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+{% if 'batch' in framework %}
+  batch:
+    jdbc:
+      initialize-schema: always
+{% endif %}

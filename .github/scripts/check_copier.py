@@ -20,6 +20,7 @@ if not isinstance(cfg, dict):
     sys.exit(1)
 
 REQUIRED = [
+    "language",
     "project_name",
     "project_slug",
     "project_author_name",

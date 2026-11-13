@@ -428,8 +428,10 @@ Y en el asistente, para arrancar el ciclo:
   toca Docker. Si una tarea necesita dos agentes, se orquestan en secuencia.
 - **Cero dependencias innecesarias.** Usa la stdlib donde puede; reutiliza las
   dependencias del proyecto (pandas, sklearn, etc.).
-- **Conoce este template.** Los agentes saben que el código vive en
-  `{{ project_slug }}/`, los datasets en `data/`, los modelos en `models/`.
+- **Conoce este template.** {% if language == 'java' %}Los agentes saben que el
+  código vive en `src/main/java/`, los tests en `src/test/java/` y el build es
+  `./mvnw verify`.{% else %}Los agentes saben que el código vive en
+  `{{ project_slug }}/`, los datasets en `data/`, los modelos en `models/`.{% endif %}
 {% if use_demo %}  Si existe `use_demo`, `make demo-export` convierte los modelos a ONNX
   (`demo/models/`) para la demo web; no tocar `demo/` salvo que el usuario lo
   pida — es un artefacto de publicación.

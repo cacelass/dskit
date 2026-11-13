@@ -6,6 +6,17 @@
 # Permite actualizar el proyecto en el futuro con: copier update
 _answers_file: .copier-answers.yml
 
+# --- Lenguaje del proyecto ---
+# "python" genera el template de Data Science / ML (comportamiento actual,
+# sin cambios). "java" genera un backend Spring Boot / Spring Batch.
+language:
+  type: str
+  help: "Lenguaje del proyecto: python (Data Science / ML) | java (backend Spring Boot / Spring Batch)"
+  choices:
+    - python
+    - java
+  default: python
+
 # --- Perfil de proyecto ---
 # Controla qué extras y qué agentes se instalan. Los perfiles automáticos
 # (minimo/estandar/completo) fijan los defaults del resto de opciones y NO
@@ -66,6 +77,7 @@ ml_type:
     - redes_neuronales
     - hibrido
   default: supervisado
+  when: "{{ language == 'python' }}"
 
 # --- Tipo de tarea (clasificacion o regresion) ---
 task_type:
@@ -75,14 +87,14 @@ task_type:
     - clasificacion
     - regresion
   default: clasificacion
-  when: "{{ ml_type == 'supervisado' or ml_type == 'redes_neuronales' or ml_type == 'hibrido' }}"
+  when: "{{ language == 'python' and (ml_type == 'supervisado' or ml_type == 'redes_neuronales' or ml_type == 'hibrido') }}"
 
 # --- MLflow (tracking de experimentos) ---
 use_mlflow:
   type: bool
   help: "Integrar MLflow para tracking de experimentos, artifacts y Model Registry?"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' }}"
 
 
 # --- Arquitectura de red neuronal (solo redes_neuronales) ---
@@ -97,7 +109,7 @@ nn_model:
     - Transformer
     - ResNet
   default: MLP
-  when: "{{ ml_type == 'redes_neuronales' }}"
+  when: "{{ language == 'python' and ml_type == 'redes_neuronales' }}"
 
 # --- Optimizador (solo redes_neuronales) ---
 optimizer_type:
@@ -110,7 +122,7 @@ optimizer_type:
     - RMSProp
     - Adagrad
   default: AdamW
-  when: "{{ ml_type == 'redes_neuronales' }}"
+  when: "{{ language == 'python' and ml_type == 'redes_neuronales' }}"
 
 # --- Función de pérdida (solo redes_neuronales) ---
 nn_loss_fn:
@@ -123,7 +135,7 @@ nn_loss_fn:
     - L1Loss
     - BCEWithLogitsLoss
   default: Auto
-  when: "{{ ml_type == 'redes_neuronales' }}"
+  when: "{{ language == 'python' and ml_type == 'redes_neuronales' }}"
 
 # --- Modelo activo (solo supervisado e hibrido) ---
 model_type:
@@ -145,7 +157,7 @@ model_type:
     - ElasticNet
     - QuantileForest
   default: todos
-  when: "{{ ml_type == 'supervisado' or ml_type == 'hibrido' }}"
+  when: "{{ language == 'python' and (ml_type == 'supervisado' or ml_type == 'hibrido') }}"
 
 cluster_model:
   type: str
@@ -159,42 +171,42 @@ cluster_model:
     - SpectralClustering
     - Birch
   default: todos
-  when: "{{ ml_type == 'no_supervisado' }}"
+  when: "{{ language == 'python' and ml_type == 'no_supervisado' }}"
 
 # --- Monitoring ---
 use_monitoring:
   type: bool
   help: "Añadir modulo de monitorizacion? (drift detection, performance tracking, make monitor)"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' }}"
 
 # --- Optuna ---
 use_optuna:
   type: bool
   help: "Añadir optimizacion de hiperparametros con Optuna? (make tune)"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' }}"
 
 # --- DuckDB ---
 use_duckdb:
   type: bool
   help: "Añadir carga de datos con DuckDB? (CSV/Parquet/JSON con SQL, muy rapido en datasets grandes)"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' }}"
 
 # --- API REST (FastAPI) ---
 use_api:
   type: bool
   help: "Generar API REST con FastAPI para servir el modelo entrenado? (make serve)\n         Requiere ejecutar make train antes de make serve. La API arranca aunque no haya modelo,\n         pero /predict devolverá 503 hasta que haya pesos en models/."
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' }}"
 
 # --- Docker (interfaz web de chat) ---
 use_docker:
   type: bool
   help: "Generar configuracion Docker con interfaz web de chat para el modelo? (make docker-run)"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' }}"
 
 # --- Tests de integración con servicio real (Docker) ---
 # Levanta servicios reales (p. ej. Postgres vía docker compose) durante los
@@ -203,22 +215,22 @@ use_docker:
 use_integration:
   type: bool
   help: "Añadir agente de tests de integración? Levanta servicios reales (Postgres vía Docker) durante los tests, sin mocks. (requiere Docker y use_docker)"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' }}"
 
 # --- Calibración de confianza (solo redes_neuronales) ---
 use_calibration:
   type: bool
   help: "Calibrar confianza del modelo con Temperature Scaling? (entrena T post-hoc en validacion)"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' and ml_type == 'redes_neuronales' }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' and ml_type == 'redes_neuronales' }}"
 
 # --- Conformal Prediction (supervisado, hibrido, redes_neuronales) ---
 use_conformal:
   type: bool
   help: "Añadir Conformal Prediction (sets/intervalos con garantia de cobertura, distribution-free)?"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido' or ml_type == 'redes_neuronales') }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido' or ml_type == 'redes_neuronales') }}"
 
 # --- RAG local (ChromaDB + BM25) ---
 use_rag:
@@ -272,8 +284,8 @@ mcp_servers:
 use_demo:
   type: bool
   help: "Generar una demo web estática (demo/)?\n         Exporta el modelo entrenado a ONNX (make demo-export) y genera 4 páginas\n         (home, try model, docs, MCP) que se ejecutan en el navegador con onnxruntime-web.\n         Es un directorio local, sin auto-deploy. Modelos tabulares de sklearn → ONNX\n         de KB a pocos MB. Requiere make train antes de make demo-export."
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' }}"
 
 # --- Explicabilidad ---
 
@@ -284,33 +296,137 @@ graphify_mode:
     - "no"
     - "solo graphify"
     - "graphify + obsidian vault"
-  default: "{{ 'graphify + obsidian vault' if proyecto_perfil == 'completo' else 'no' }}"
-  when: "{{ proyecto_perfil == 'manual' }}"
+  default: "{{ 'graphify + obsidian vault' if (language == 'python' and proyecto_perfil == 'completo') else 'no' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' }}"
 
 use_shap:
   type: bool
   help: "Añadir SHAP (explicabilidad de modelos)? Genera bar + beeswarm por modelo."
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido') }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido') }}"
 
 # --- Boosting opcional (solo supervisado e hibrido) ---
 use_xgboost:
   type: bool
   help: "Añadir XGBoost a _build_models()?"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido') }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido') }}"
 
 use_lightgbm:
   type: bool
   help: "Añadir LightGBM a _build_models()?"
-  default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido') }}"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido') }}"
 
 use_catboost:
   type: bool
   help: "Añadir CatBoost a _build_models()? (boosting nativo para categoricas)"
+  default: "{{ proyecto_perfil == 'completo' and language == 'python' }}"
+  when: "{{ language == 'python' and proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido') }}"
+
+# --- Java (solo language == 'java') ---
+# Estas variables no se preguntan en python: la condicion `when` las oculta y
+# sus defaults solo se usan en el arbol Java.
+build_tool:
+  type: str
+  help: "Herramienta de build (gradle llegara en JAVA-001b; por ahora maven)"
+  choices:
+    - maven
+  default: maven
+  when: "{{ language == 'java' }}"
+
+java_version:
+  type: str
+  help: "Version de Java (LTS)"
+  choices:
+    - "17"
+    - "21"
+    - "25"
+  default: "21"
+  when: "{{ language == 'java' }}"
+
+base_package:
+  type: str
+  help: "Paquete base Java (ej: com.miempresa.miproyecto)"
+  default: "com.{{ project_slug | replace('_', '') }}"
+  validator: >-
+    {% if not (base_package | regex_search('^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$')) %}
+    El paquete base debe tener forma com.empresa.proyecto (minusculas, numeros y _).
+    {% endif %}
+  when: "{{ language == 'java' }}"
+
+# Derivada de base_package: com.empresa.proyecto -> com/empresa/proyecto.
+# Existe como variable propia porque las rutas del template no pueden llevar
+# filtros Jinja con `|` en el nombre del directorio (invalido en Windows).
+base_package_path:
+  type: str
+  default: "{{ base_package | replace('.', '/') }}"
+  when: false
+
+framework:
+  type: str
+  help: "Stack Spring Boot: spring-boot (web/API) | spring-boot-batch | spring-boot-web+batch"
+  choices:
+    - spring-boot
+    - spring-boot-batch
+    - spring-boot-web+batch
+  default: "{{ 'spring-boot-batch' if proyecto_perfil in ['minimo', 'estandar'] else 'spring-boot-web+batch' }}"
+  when: "{{ language == 'java' }}"
+
+db:
+  type: str
+  help: "Base de datos del proyecto"
+  choices:
+    - h2
+    - postgres
+    - mysql
+    - none
+  default: "{{ 'h2' if proyecto_perfil in ['minimo', 'estandar'] else 'postgres' }}"
+  validator: >-
+    {% if 'batch' in framework and db == 'none' %}
+    Spring Batch necesita una base de datos (JobRepository): elige h2, postgres o mysql.
+    {% endif %}
+  when: "{{ language == 'java' }}"
+
+migrations:
+  type: str
+  help: "Migraciones de esquema (flyway | liquibase | none)"
+  choices:
+    - flyway
+    - liquibase
+    - none
+  default: "{{ 'flyway' if db != 'none' else 'none' }}"
+  when: "{{ language == 'java' }}"
+
+use_security:
+  type: bool
+  help: "Spring Security (JWT + CORS)?"
   default: "{{ proyecto_perfil == 'completo' }}"
-  when: "{{ proyecto_perfil == 'manual' and (ml_type == 'supervisado' or ml_type == 'hibrido') }}"
+  when: "{{ language == 'java' and proyecto_perfil == 'manual' }}"
+
+use_testcontainers:
+  type: bool
+  help: "Tests de integracion con Testcontainers (requiere Docker)?"
+  default: "{{ proyecto_perfil in ['estandar', 'completo'] }}"
+  when: "{{ language == 'java' and proyecto_perfil == 'manual' }}"
+
+use_pit:
+  type: bool
+  help: "Mutation testing con PIT?"
+  default: "{{ proyecto_perfil in ['estandar', 'completo'] }}"
+  when: "{{ language == 'java' and proyecto_perfil == 'manual' }}"
+
+use_archunit:
+  type: bool
+  help: "Tests de arquitectura con ArchUnit (limites de capas)?"
+  default: "{{ proyecto_perfil in ['estandar', 'completo'] }}"
+  when: "{{ language == 'java' and proyecto_perfil == 'manual' }}"
+
+use_observability:
+  type: bool
+  help: "Actuator + Micrometer (health, metricas, Prometheus)?"
+  default: "{{ proyecto_perfil == 'completo' }}"
+  when: "{{ language == 'java' and proyecto_perfil == 'manual' }}"
 
 # --- Licencia y versiones ---
 project_open_source_license:
@@ -332,6 +448,7 @@ python_version:
     - "3.12"
     - "3.13"
   default: "3.12"
+  when: "{{ language == 'python' }}"
 
 dskit_version:
   type: str
@@ -368,21 +485,27 @@ _message_before_copy: >-
     necesita el motor de contenedores de use_docker. Actívalo o el agente
     devolverá success=false al intentar levantar servicios.
   {% endif %}
+  {% if language == 'java' %}
+    Proyecto Java ({{ framework }}, Java {{ java_version }}): build con ./mvnw,
+    sin instalación automática de dependencias. Primera vez: ./mvnw verify.
+  {% endif %}
   {% if proyecto_perfil == 'completo' or proyecto_perfil == 'manual' %}
     NOTA: se instalaron las dependencias automáticamente (perfil {{ proyecto_perfil }}).
   {% else %}
     NOTA: no se instalan dependencias automáticamente. Ejecuta `make setup` cuando
   quieras tener el entorno listo (perfil {{ proyecto_perfil }}).
   {% endif %}
-  Generando proyecto '{{ project_name }}' ({{ ml_type }})...
+  Generando proyecto '{{ project_name }}' ({{ language if language == 'java' else ml_type }})...
 
 _tasks:
   # El arnés arranca con init.sh — asegura el bit de ejecución en el destino.
   - "chmod +x init.sh"
+  - "{% if language == 'java' %}chmod +x mvnw{% endif %}"
   # La instalación de dependencias es opt-in: solo en completo/manual. En
   # minimo/estandar el proyecto nace sin venv y `make setup` lo instala.
+  # En Java no hay `uv sync`: el build es ./mvnw (wrapper versionado).
   - >-
-    {% if proyecto_perfil == 'completo' or proyecto_perfil == 'manual' %}
+    {% if language == 'python' and (proyecto_perfil == 'completo' or proyecto_perfil == 'manual') %}
     uv sync --extra dev --extra {{ ml_type }}
     {% if use_mlflow %}--extra mlflow_tracking{% endif %}
     {% if graphify_mode != 'no' %}--extra graphify{% endif %}
@@ -416,7 +539,8 @@ _tasks:
   # poder generar el proyecto por ella sería mucho peor que generarlo sin los
   # bloques. Si falla, `make prompts-sync` lo arregla.
   - >-
-    uv run python -m agents.prompts_sync --write
+    {% if language == 'java' %}uv run --no-project{% else %}uv run{% endif %}
+    python -m agents.prompts_sync --write
     || echo "  (aviso: no se pudieron generar los bloques de los prompts — ejecuta 'make prompts-sync')"
 
 _exclude:
@@ -501,6 +625,40 @@ _exclude:
   - "{% if proyecto_perfil in ['minimo', 'estandar'] %}agents/prompts/audit_agent.md{% endif %}"
   - "{% if proyecto_perfil in ['minimo', 'estandar'] %}agents/tests/test_audit_agent.py{% endif %}"
   - "{% if proyecto_perfil in ['minimo', 'estandar'] %}agents/tests/test_audit.py{% endif %}"
+  # --- Gating por lenguaje: python (DS/ML) vs java (Spring Boot / Spring Batch) ---
+  # El contenido python-only se excluye cuando language == 'java' y el arbol
+  # Java (src/, pom.xml, wrapper) cuando es python. Los ficheros compartidos
+  # (agents/, harness/, .opencode/, init.sh, Makefile, AGENTS.md) llevan
+  # condicionales dentro y viajan en ambos.
+  - "{% if language == 'java' %}/pyproject.toml{% endif %}"
+  - "{% if language == 'java' %}/main.py{% endif %}"
+  - "{% if language == 'java' %}/tasks.py{% endif %}"
+  - "{% if language == 'java' %}/{{ project_slug }}{% endif %}"
+  - "{% if language == 'java' %}/tests{% endif %}"
+  - "{% if language == 'java' %}/data{% endif %}"
+  - "{% if language == 'java' %}/models{% endif %}"
+  - "{% if language == 'java' %}/notebooks{% endif %}"
+  - "{% if language == 'java' %}/reports{% endif %}"
+  - "{% if language == 'java' %}/tools{% endif %}"
+  - "{% if language == 'java' %}/api{% endif %}"
+  - "{% if language == 'java' %}/chat{% endif %}"
+  - "{% if language == 'java' %}/demo{% endif %}"
+  - "{% if language == 'java' %}/vault{% endif %}"
+  - "{% if language == 'java' %}docs/knowledge{% endif %}"
+  - "{% if language == 'java' %}docs/source{% endif %}"
+  - "{% if language == 'java' %}docs/Makefile{% endif %}"
+  - "{% if language == 'java' %}docs/make.bat{% endif %}"
+  - "{% if language == 'java' %}/.bandit{% endif %}"
+  - "{% if language == 'java' %}/.pre-commit-config.yaml{% endif %}"
+  - "{% if language == 'java' %}.github/workflows/ci.yml{% endif %}"
+  - "{% if language != 'java' %}/pom.xml{% endif %}"
+  - "{% if language != 'java' %}/mvnw{% endif %}"
+  - "{% if language != 'java' %}/mvnw.cmd{% endif %}"
+  - "{% if language != 'java' %}/.mvn{% endif %}"
+  - "{% if language != 'java' %}/src{% endif %}"
+  - "{% if language == 'java' and framework == 'spring-boot' %}src/main/java/{{ base_package_path }}/batch{% endif %}"
+  - "{% if language == 'java' and migrations != 'flyway' %}src/main/resources/db/migration{% endif %}"
+  - "{% if language == 'java' and migrations != 'liquibase' %}src/main/resources/db/changelog{% endif %}"
 
 _subdirectory: template
 _templates_suffix: ""

@@ -1,3 +1,4 @@
+{% if language == 'python' %}
 .PHONY: setup install-deps \
         data features train predict pipeline \
         test smoke lint format typecheck security audit check lock \
@@ -588,3 +589,84 @@ info:
 	@echo ""
 	@uv pip list 2>/dev/null | head -40 || pip list | head -40
 	@echo ""
+{% else %}
+# Makefile Java — fachada fina sobre ./mvnw (D6 del spec JAVA: cero logica propia)
+.PHONY: help setup init test verify check compile clean \
+        agents-list agents-doctor agents-eval backlog prompts-sync prompts-check \
+        skills assistants-sync
+
+MVNW = ./mvnw
+AGENTS = uv run --no-project python -m agents
+
+help:
+	@echo ""
+	@echo "  {{ project_name }} — Java ({{ framework }}, Java {{ java_version }})"
+	@echo ""
+	@echo "  Build"
+	@echo "    make setup          resuelve dependencias (dependency:go-offline)"
+	@echo "    make compile        ./mvnw -q compile"
+	@echo "    make test           ./mvnw test"
+	@echo "    make verify         ./mvnw verify"
+	@echo "    make check          verify + puerta del arnes"
+	@echo "    make clean          ./mvnw clean"
+	@echo ""
+	@echo "  Arnes"
+	@echo "    make init           ./init.sh — la puerta"
+	@echo "    make backlog        estado de harness/featureslist.json"
+	@echo "    make agents-list    agentes del plano de control"
+	@echo "    make agents-doctor  diagnostico del arnes"
+	@echo "    make agents-eval    harness + contracts + smoke"
+	@echo "    make prompts-sync   regenera prompts desde codigo y contratos"
+	@echo "    make prompts-check  falla si un prompt se desincronizo"
+	@echo "    make skills         instala prompts como skills en .opencode/skills/"
+	@echo "    make assistants-sync espeja subagentes a .claude/agents/"
+	@echo ""
+
+setup:
+	@$(MVNW) -q dependency:go-offline
+
+init:
+	@./init.sh
+
+test:
+	@$(MVNW) test
+
+verify:
+	@$(MVNW) verify
+
+check: verify
+	@./init.sh
+
+compile:
+	@$(MVNW) -q compile
+
+clean:
+	@$(MVNW) clean
+
+agents-list:
+	@$(AGENTS) list
+
+agents-doctor:
+	@$(AGENTS) doctor
+
+agents-eval:
+	@PYTHONUTF8=1 $(AGENTS).evals.runner --harness --contracts
+
+backlog:
+	@$(AGENTS) --json run harness status
+
+prompts-sync assistants-sync:
+	@$(AGENTS).prompts_sync --write
+
+prompts-check:
+	@$(AGENTS).prompts_sync
+
+skills:
+	@mkdir -p .opencode/skills
+	@for skill in agents/prompts/*.md; do \
+		name=$$(basename "$$skill" .md); \
+		cp "$$skill" ".opencode/skills/$$name.md"; \
+		echo "   skill: $$name"; \
+	done
+	@echo "   Skills instaladas en .opencode/skills/."
+{% endif %}

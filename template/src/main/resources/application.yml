@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: {{ project_slug }}
+{% if db != 'none' %}
+  datasource:
+{% if db == 'h2' %}
+    url: jdbc:h2:mem:{{ project_slug }};DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+{% elif db == 'postgres' %}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/{{ project_slug }}}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+{% elif db == 'mysql' %}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/{{ project_slug }}}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
+{% endif %}
+{% endif %}
+{% if 'batch' in framework and db != 'none' %}
+  batch:
+    jdbc:
+      # Fase 1: Spring Batch crea su esquema BATCH_*. La feature JAVA-007
+      # (agente migrations) pasa a ser la dueña de esas tablas.
+      initialize-schema: always
+{% endif %}

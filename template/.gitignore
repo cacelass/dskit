@@ -146,6 +146,13 @@ secrets/
 # --- Sphinx ---
 docs/_build/
 
+{% if language == 'java' %}
+# --- Java / Maven ---
+target/
+*.class
+.mvn/wrapper/maven-wrapper.jar
+{% endif %}
+
 # --- Graphify ---
 graphify-out/
 

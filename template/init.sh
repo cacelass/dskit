@@ -56,6 +56,7 @@ section() { [ "$JSON" -eq 1 ] || printf '\n\033[1m%s\033[0m\n' "$1"; }
 section "Entorno"
 
 PY=""
+{% if language == 'python' %}
 for candidate in "python{{ python_version }}" python3 python; do
   if command -v "$candidate" >/dev/null 2>&1; then PY="$candidate"; break; fi
 done
@@ -72,6 +73,17 @@ else
     warn "python" "$PY es $PY_VERSION, el proyecto declara {{ python_version }} — usa el intérprete de .venv"
   fi
 fi
+{% else %}
+for candidate in python3 python; do
+  if command -v "$candidate" >/dev/null 2>&1; then PY="$candidate"; break; fi
+done
+
+if [ -z "$PY" ]; then
+  fail "python" "no se encontró Python en PATH (lo necesita el arnés: plano de control)"
+else
+  ok "python" "$("$PY" --version 2>&1) (plano de control del arnés)"
+fi
+{% endif %}
 
 if command -v uv >/dev/null 2>&1; then
   ok "uv" "$(uv --version 2>/dev/null | head -1)"
@@ -81,11 +93,33 @@ else
   RUNNER="$PY -m"
 fi
 
+{% if language == 'python' %}
 if [ -d ".venv" ]; then
   ok "venv" ".venv presente"
 else
   warn "venv" "sin .venv — ejecuta 'make setup' antes de tocar código"
 fi
+{% else %}
+JAVA_RAW=""
+JAVA_MAJOR=""
+if command -v java >/dev/null 2>&1; then
+  JAVA_RAW="$(java -version 2>&1 | head -1)"
+  JAVA_MAJOR="$(printf '%s' "$JAVA_RAW" | sed -n 's/.*version "\([0-9][0-9]*\).*/\1/p')"
+fi
+if [ -z "$JAVA_MAJOR" ]; then
+  fail "jdk" "no se encontró 'java' en PATH"
+elif [ "$JAVA_MAJOR" -ge {{ java_version }} ] 2>/dev/null; then
+  ok "jdk" "$JAVA_RAW"
+else
+  fail "jdk" "Java $JAVA_MAJOR < {{ java_version }} — el proyecto requiere {{ java_version }}+"
+fi
+
+if [ -f "./mvnw" ]; then
+  ok "mvnw" "wrapper presente"
+else
+  fail "mvnw" "falta ./mvnw — genera el wrapper con 'mvn wrapper:wrapper'"
+fi
+{% endif %}
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  2. Ficheros del arnés
@@ -256,6 +290,7 @@ fi
 # ─────────────────────────────────────────────────────────────────────────────
 section "Proyecto"
 
+{% if language == 'python' %}
 if [ -d "{{ project_slug }}" ]; then
   ok "paquete" "{{ project_slug }}/ presente"
 else
@@ -278,12 +313,37 @@ if [ -d "tests" ]; then
 else
   fail "tests" "falta el directorio tests/"
 fi
+{% else %}
+if [ -d "src/main/java" ]; then
+  ok "src/main/java" "presente"
+else
+  fail "src/main/java" "falta el código fuente Java (src/main/java/)"
+fi
+
+if [ -f "pom.xml" ]; then
+  ok "pom.xml" "presente"
+else
+  fail "pom.xml" "falta pom.xml"
+fi
+
+if [ -d "src/test/java" ]; then
+  TEST_COUNT="$(find src/test/java -name '*Test.java' -o -name '*Tests.java' 2>/dev/null | wc -l | tr -d ' ')"
+  if [ "$TEST_COUNT" -gt 0 ]; then
+    ok "tests" "$TEST_COUNT ficheros de test Java"
+  else
+    fail "tests" "src/test/java/ existe pero no contiene ningún *Test.java"
+  fi
+else
+  fail "tests" "falta el directorio src/test/java/"
+fi
+{% endif %}
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  5. Suite de tests — la prueba de que el proyecto no está roto
 # ─────────────────────────────────────────────────────────────────────────────
 section "Verificación"
 
+{% if language == 'python' %}
 if [ "$QUICK" -eq 1 ]; then
   warn "pytest" "omitido (--quick) — NO declares ninguna feature como done sin esto"
 elif [ "$ERRORS" -gt 0 ]; then
@@ -299,6 +359,22 @@ else
   fi
   rm -f "$TEST_LOG"
 fi
+{% else %}
+if [ "$QUICK" -eq 1 ]; then
+  warn "mvnw verify" "omitido (--quick) — NO declares ninguna feature como done sin esto"
+elif [ "$ERRORS" -gt 0 ]; then
+  warn "mvnw verify" "omitido — hay errores estructurales que arreglar antes"
+else
+  TEST_LOG="$(mktemp)"
+  if ./mvnw -q verify >"$TEST_LOG" 2>&1; then
+    ok "mvnw verify" "build + tests en verde"
+  else
+    fail "mvnw verify" "$(grep -E '^\[ERROR\]|BUILD FAILURE' "$TEST_LOG" | head -3 | tr '\n' ' ' || echo 'el build falla')"
+    [ "$JSON" -eq 1 ] || tail -15 "$TEST_LOG" | sed 's/^/      /'
+  fi
+  rm -f "$TEST_LOG"
+fi
+{% endif %}
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  Veredicto

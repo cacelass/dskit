@@ -38,7 +38,10 @@ STD = dict(
 )
 
 DEFAULTS = dict(
+    language="python",
     proyecto_perfil="estandar",
+    ml_type="supervisado",
+    task_type="clasificacion",
     model_type="todos",
     cluster_model="todos",
     nn_model="MLP",
@@ -62,7 +65,36 @@ DEFAULTS = dict(
     use_mcp=False,
     use_demo=False,
     graphify_mode="no",
+    build_tool="maven",
+    java_version="21",
+    base_package="com.test",
+    base_package_path="com/test",
+    framework="spring-boot-batch",
+    db="h2",
+    migrations="flyway",
+    use_security=False,
+    use_testcontainers=False,
+    use_pit=False,
+    use_archunit=False,
+    use_observability=False,
 )
+
+#: Variables Java que NO ramifican la matriz all-pairs de Python: se prueban
+#: con los combos fijados de abajo. `language` es un driver global, como
+#: `proyecto_perfil`.
+JAVA_ONLY = {
+    "build_tool",
+    "java_version",
+    "base_package",
+    "framework",
+    "db",
+    "migrations",
+    "use_security",
+    "use_testcontainers",
+    "use_pit",
+    "use_archunit",
+    "use_observability",
+}
 
 # Combos que ya rompieron algo alguna vez. All-pairs cubre interacciones de 2
 # variables; estos van fijos porque fallaron por interacciones de 3+ y no hay
@@ -109,6 +141,32 @@ PINNED: list[tuple[str, dict]] = [
     ("pinned:hibrido-regresion", dict(ml_type="hibrido", task_type="regresion")),
     # Minimo absoluto: todo apagado.
     ("pinned:minimo", dict(ml_type="supervisado", task_type="clasificacion")),
+    # Java estandar: batch con H2, sin seguridad/observabilidad.
+    (
+        "pinned:java-estandar",
+        dict(
+            language="java",
+            framework="spring-boot-batch",
+            db="h2",
+            migrations="flyway",
+            java_version="21",
+        ),
+    ),
+    # Java completo: web+batch, postgres y todas las piezas nuevas encendidas.
+    (
+        "pinned:java-completo",
+        dict(
+            language="java",
+            framework="spring-boot-web+batch",
+            db="postgres",
+            migrations="liquibase",
+            java_version="25",
+            use_security=True,
+            use_testcontainers=True,
+            use_archunit=True,
+            use_observability=True,
+        ),
+    ),
 ]
 
 #: Variables cuyas condiciones `when:` gobiernan al resto.
@@ -158,7 +216,7 @@ def variables_de_copier() -> tuple[dict[str, list], dict]:
     for nombre, spec in doc.items():
         if nombre.startswith("_") or not isinstance(spec, dict) or "type" not in spec:
             continue
-        if nombre == "proyecto_perfil":
+        if nombre == "proyecto_perfil" or nombre == "language" or nombre in JAVA_ONLY:
             continue
         if "choices" in spec:
             valores = list(spec["choices"])
@@ -192,7 +250,7 @@ COMBOS: list[tuple[str, dict]] = construir_combos()
 
 ALL_FILES = sorted(
     [
-        str(f.relative_to(BASE))
+        str(f.relative_to(BASE)).replace("\\", "/")
         for f in BASE.rglob("*")
         if f.is_file() and "__pycache__" not in str(f) and ".DS_Store" not in str(f)
     ]
