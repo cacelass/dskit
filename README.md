@@ -1,30 +1,60 @@
-# DSKIT
+# DSKIT-JAVA
+
+Fork de **dskit** con una adaptación del arnés y del template para **Java
+(Spring Boot / Spring Batch)**.
 
 ![version](https://img.shields.io/badge/dskit-1.15.1-blue)
-![CI](https://github.com/cacelass/dskit/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Pedro0020/dskit-JAVA/actions/workflows/ci.yml/badge.svg)
 [![based on dskit](https://img.shields.io/badge/based_on-dskit_by_cacelass-blueviolet)](https://github.com/cacelass/dskit)
 ![python](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12%20|%203.13-blue)
 ![uv](https://img.shields.io/badge/gestor-uv-green)
 ![license](https://img.shields.io/badge/license-Apache--2.0-green)
 
-**Template profesional para Data Science y AI Engineering**
+**Template profesional para Data Science, AI Engineering y Java**
 
 Plantilla [copier](https://copier.readthedocs.io) para iniciar proyectos de ML de forma organizada, reproducible y lista para producción. Construida sobre `uv`, con una arquitectura modular que cubre el flujo completo desde la ingesta de datos hasta el modelo evaluado, exportado y servido como API o interfaz de chat.
 
 Y con un **arnés de IA** dentro del propio repositorio: un entorno que gobierna cómo trabajan los agentes sobre el proyecto, con puerta de entrada, backlog verificable y una definición de «hecho» que se aplica en código, no pidiéndosela al modelo.
 
-> **Obra derivada de [dskit](https://github.com/cacelass/dskit)**
-> — `https://github.com/cacelass/dskit` — creado por
+> **Fork de [dskit](https://github.com/cacelass/dskit)** — repo original:
+> `https://github.com/cacelass/dskit` — creado por
 > [cacelass](https://github.com/cacelass) y publicado bajo Apache-2.0.
-> Este repositorio lo adapta para desarrollo Java (Spring Boot / Spring Batch).
+> Este fork (`https://github.com/Pedro0020/dskit-JAVA`) lo adapta para
+> desarrollo Java (Spring Boot / Spring Batch).
 > Ver [CREDITS.md](CREDITS.md) y [Créditos y origen](#créditos-y-origen).
+
+## Java (Spring Boot / Spring Batch)
+
+Este fork añade un segundo árbol de proyecto (`language: java`) además del
+template Python original:
+
+```bash
+# Interactivo: responde language=java y las preguntas Java
+copier copy --trust gh:Pedro0020/dskit-JAVA mi_proyecto
+
+# No interactivo (perfil estandar: Spring Batch + H2 + Flyway)
+copier copy --trust --defaults --data language=java gh:Pedro0020/dskit-JAVA mi_proyecto
+cd mi_proyecto
+./mvnw verify        # build + tests
+./init.sh            # la puerta del arnés
+```
+
+Variables principales: `java_version` (17/21/25), `framework`
+(`spring-boot`, `spring-boot-batch`, `spring-boot-web+batch`), `db`
+(`h2`/`postgres`/`mysql`/`none`), `migrations` (`flyway`/`liquibase`/`none`),
+`use_security`, `use_testcontainers`, `use_pit`, `use_archunit` y
+`use_observability`.
+
+Alcance y estado de la adaptación: [SPEC-JAVA.md](SPEC-JAVA.md) y
+[PLAN-JAVA.md](PLAN-JAVA.md).
 
 ---
 
 ## Índice
 
-- [DSKIT](#dskit)
+- [DSKIT-JAVA](#dskit-java)
   - [Índice](#índice)
+  - [Java (Spring Boot / Spring Batch)](#java-spring-boot--spring-batch)
   - [Arnés de IA](#arnés-de-ia)
     - [Los agentes](#los-agentes)
     - [Funciona con cualquier asistente](#funciona-con-cualquier-asistente)
@@ -174,13 +204,13 @@ Python >= 3.10 requerido.
 ## Instalación rápida
 
 ```bash
-copier copy --trust gh:cacelass/dskit nombre_proyecto
+copier copy --trust gh:Pedro0020/dskit-JAVA nombre_proyecto
 ```
 
 O desde copia local:
 
 ```bash
-copier copy --trust ./dskit nombre_proyecto
+copier copy --trust ./dskit-JAVA nombre_proyecto
 ```
 
 Copier ejecuta `uv sync` automáticamente. Si falla, hazlo manualmente:
@@ -481,6 +511,9 @@ Este proyecto es una **obra derivada** de [dskit](https://github.com/cacelass/ds
 —`https://github.com/cacelass/dskit`—, creado por
 [cacelass](https://github.com/cacelass) y publicado bajo Apache-2.0. Se
 conservan la licencia y el aviso de copyright de la obra original.
+
+Este fork se publica en
+**[https://github.com/Pedro0020/dskit-JAVA](https://github.com/Pedro0020/dskit-JAVA)**.
 
 La adaptación para Java (Spring Boot / Spring Batch) —variable `language`,
 template Java, puerta `./mvnw verify`, y los dominios y agentes Java— está

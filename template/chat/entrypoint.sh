@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # chat/entrypoint.sh — Entrypoint del contenedor {{ project_name }}
-# Generado por dskit (https://github.com/cacelass/dskit)
+# Generado por dskit-JAVA (fork de dskit — https://github.com/cacelass/dskit)
 set -euo pipefail
 
 # ── Colores ──────────────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ printf "\n"
 printf "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
 printf "  ${BOLD}{{ project_name }}${RESET}  ·  v{{ project_version }}\n"
 printf "  ML type : ${YELLOW}{{ ml_type }}${RESET}\n"
-printf "  Plantilla: ${BLUE}https://github.com/cacelass/dskit${RESET}\n"
+printf "  Plantilla: ${BLUE}https://github.com/Pedro0020/dskit-JAVA${RESET} (fork de dskit)\n"
 printf "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n\n"
 
 # ── Verificar modelos ─────────────────────────────────────────────────────────

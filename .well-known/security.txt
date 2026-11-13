@@ -1,8 +1,10 @@
 # security.txt — https://securitytxt.org
 #
-# Si encuentras una vulnerabilidad de seguridad en dskit,
+# Si encuentras una vulnerabilidad de seguridad en dskit-JAVA (fork de dskit),
 # repórtala abriendo un issue en GitHub:
-#   https://github.com/cacelass/dskit/issues
+#   https://github.com/Pedro0020/dskit-JAVA/issues
+#
+# Proyecto original: https://github.com/cacelass/dskit
 
-Contact: https://github.com/cacelass/dskit/issues/new
+Contact: https://github.com/Pedro0020/dskit-JAVA/issues/new
 Preferred-Languages: es, en

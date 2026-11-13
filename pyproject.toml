@@ -33,6 +33,10 @@ dev = [
     "types-PyYAML",
 ]
 
+[project.urls]
+Repository = "https://github.com/Pedro0020/dskit-JAVA"
+"Original project" = "https://github.com/cacelass/dskit"
+
 [build-system]
 requires = ["setuptools>=65.0", "wheel"]
 build-backend = "setuptools.build_meta"

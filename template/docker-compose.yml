@@ -1,5 +1,5 @@
 # docker-compose.yml — {{ project_name }}
-# Generado por dskit (https://github.com/cacelass/dskit)
+# Generado por dskit-JAVA (fork de dskit — https://github.com/cacelass/dskit)
 # ─────────────────────────────────────────────────────────────────────────────
 #
 # Uso rapido:

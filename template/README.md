@@ -132,7 +132,7 @@ uv run python -m agents --json run rag refresh             # descarga y reindexa
 {% if use_docker %}
 ## Docker — Interfaz de chat
 
-Generado con la plantilla **[dskit](https://github.com/cacelass/dskit)**.
+Generado con la plantilla **[dskit-JAVA](https://github.com/Pedro0020/dskit-JAVA)** (fork de [dskit](https://github.com/cacelass/dskit)).
 
 La imagen Docker incluye una interfaz web de chat para interactuar con los
 modelos entrenados directamente desde el navegador.
@@ -177,7 +177,7 @@ make docker-down    # parar y eliminar contenedores
 {% if use_demo %}
 ## Demo
 
-Generado con la plantilla **[dskit](https://github.com/cacelass/dskit)**.
+Generado con la plantilla **[dskit-JAVA](https://github.com/Pedro0020/dskit-JAVA)** (fork de [dskit](https://github.com/cacelass/dskit)).
 
 Este proyecto incluye una **demo web estática** (`demo/`) con 4 páginas:
 
@@ -298,4 +298,4 @@ Abre `docs/vault/` como carpeta en Obsidian para explorar y documentar el proyec
 
 ---
 
-Template generado con https://github.com/cacelass/dskit
+Template generado con https://github.com/Pedro0020/dskit-JAVA (fork de https://github.com/cacelass/dskit)

@@ -378,7 +378,7 @@ dependencias, siguiendo la filosofía de `template/.opencode/agents/lider.md`
 - Verificación local: `uvx copier copy --trust --defaults --skip-tasks
   --data-file <java.yml> <src> <dst>` con `src` copiado a /tmp SIN `.git`
   (regla del mirror); puerta con Git Bash (`bash ./init.sh`).
-- **Repo derivado**: basado en `cacelass/dskit` (Apache-2.0). Atribución en
-  `NOTICE` + README; el remoto `upstream` apunta al original con el push
-  deshabilitado, y el `origin` propio lo añade el usuario al publicar.
+- **Repo derivado**: fork `Pedro0020/dskit-JAVA` de `cacelass/dskit`
+  (Apache-2.0). Atribución en `NOTICE` + `CREDITS.md` + README; `origin` =
+  fork propio y `upstream` = original (solo fetch).
 

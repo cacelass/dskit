@@ -9,6 +9,11 @@ Este proyecto es una obra derivada de **dskit**:
 - **Licencia:** Apache-2.0 (ver [LICENSE](LICENSE))
 - **Copyright:** 2026 cacelass
 
+## Este fork
+
+- **Repositorio:** https://github.com/Pedro0020/dskit-JAVA
+- **Tipo:** fork de dskit adaptado a Java (Spring Boot / Spring Batch)
+
 ## Adaptación
 
 Adaptación del arnés y del template para desarrollo Java (Spring Boot /

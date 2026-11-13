@@ -1,5 +1,5 @@
 # compose.integration.yml — servicios para los tests de integración
-# Generado por dskit (https://github.com/cacelass/dskit)
+# Generado por dskit-JAVA (fork de dskit — https://github.com/cacelass/dskit)
 # ─────────────────────────────────────────────────────────────────────────────
 #
 # Lo levanta el agente `integration` (make integration) para correr

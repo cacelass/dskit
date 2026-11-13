@@ -1,5 +1,5 @@
 # Dockerfile — {{ project_name }}
-# Generado por dskit (https://github.com/cacelass/dskit)
+# Generado por dskit-JAVA (fork de dskit — https://github.com/cacelass/dskit)
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ── Imagen base ───────────────────────────────────────────────────────────────
@@ -9,7 +9,8 @@ FROM python:{{ python_version }}-slim
 LABEL org.opencontainers.image.title="{{ project_name }}"
 LABEL org.opencontainers.image.version="{{ project_version }}"
 LABEL org.opencontainers.image.description="{{ project_description }}"
-LABEL dskit.template="https://github.com/cacelass/dskit"
+LABEL dskit.template="https://github.com/Pedro0020/dskit-JAVA"
+LABEL dskit.upstream="https://github.com/cacelass/dskit"
 LABEL dskit.ml_type="{{ ml_type }}"
 
 WORKDIR /app

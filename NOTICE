@@ -13,6 +13,9 @@ Esta distribucion es una obra derivada
 Adaptacion del arnes y del template para desarrollo Java (Spring Boot /
 Spring Batch), mantenida por poganmart desde 2026 sobre la obra original.
 
+Repositorio de este fork:
+https://github.com/Pedro0020/dskit-JAVA
+
 Cambios principales respecto a la obra original
 -----------------------------------------------
 - Variable `language` (python | java) y arbol Java nuevo: pom.xml, wrapper

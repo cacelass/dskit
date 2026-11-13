@@ -2,9 +2,10 @@
 
 ## Versiones con soporte
 
-Solo la última versión publicada. dskit es una plantilla: los proyectos ya
-generados no reciben parches automáticos, hay que traerlos con
-`copier update` (ver la sección «Actualizar un proyecto existente» del README).
+Solo la última versión publicada. dskit-JAVA es un fork de **dskit** (una
+plantilla): los proyectos ya generados no reciben parches automáticos, hay que
+traerlos con `copier update` (ver la sección «Actualizar un proyecto existente»
+del README).
 
 | Versión | Soporte |
 |---|---|
@@ -14,8 +15,9 @@ generados no reciben parches automáticos, hay que traerlos con
 ## Reportar una vulnerabilidad
 
 **No abras un issue público.** Usa
-[Security Advisories](https://github.com/cacelass/dskit/security/advisories/new)
-de GitHub, que es privado.
+[Security Advisories](https://github.com/Pedro0020/dskit-JAVA/security/advisories/new)
+de GitHub, que es privado. Si el problema afecta a la plantilla original,
+repórtalo también en https://github.com/cacelass/dskit.
 
 Incluye si puedes: la versión de dskit, las opciones de generación (tu
 `.copier-answers.yml`), qué se puede conseguir explotándolo y cómo reproducirlo.
