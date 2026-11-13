@@ -296,3 +296,15 @@ Notas de implementación (lecciones):
 - La matriz smoke de CI queda sin combo Java hasta JAVA-013 (el job `smoke`
   actual es Python-only); el render Java se cubre con los combos fijados de
   `validate_template.py`.
+
+### Hallazgos de la prueba E2E (Nov 2026)
+
+Ejecutado `TEST-PLAN-JAVA.md` sobre un procesador de pedidos real. Corregidos
+en el template: H2 en scope test cuando `db != h2` (F1), auto-run de jobs en
+tests desactivado (F2), gate con Git Bash en Windows (F3), contenido Python
+en el render Java (F4), `fcntl` ausente en Windows (F5), multi-job con
+`spring.batch.job.name` (F8) y UTF-8 en `init.sh --json` (F11).
+
+Registrados para sus features: semilla de backlog Java (F6 → JAVA-003) y
+`commit_feature` (bump de `<version>` en pom), `doctor`/`env` y
+`suggest_commit_message` para Java (F7/F9/F10 → JAVA-005).

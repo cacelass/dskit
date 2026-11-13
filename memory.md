@@ -378,6 +378,14 @@ dependencias, siguiendo la filosofía de `template/.opencode/agents/lider.md`
 - Verificación local: `uvx copier copy --trust --defaults --skip-tasks
   --data-file <java.yml> <src> <dst>` con `src` copiado a /tmp SIN `.git`
   (regla del mirror); puerta con Git Bash (`bash ./init.sh`).
+- **E2E Nov 2026** (procesador de pedidos, `TEST-PLAN-JAVA.md`): corregidos
+  H2 en test si `db != h2`, auto-run de jobs en tests
+  (`spring.batch.job.enabled: false`), gate con Git Bash en Windows
+  (`_bash_command`), `fcntl` ausente en Windows (fail-open), multi-job
+  (`spring.batch.job.name: ${JOB_NAME:demoJob}`), UTF-8 en `init.sh --json`,
+  y pulidos del render Java (.env/.vscode/ayuda/.github). Pendientes: semilla
+  de backlog Java (JAVA-003) y `commit_feature`/`doctor`/`env` Java
+  (JAVA-005).
 - **Repo derivado**: fork `Pedro0020/dskit-JAVA` de `cacelass/dskit`
   (Apache-2.0), centrado en Java. Atribución en `NOTICE` + `CREDITS.md` +
   README. Remoto `origin` = fork propio; `upstream` (original DS) eliminado
