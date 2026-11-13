@@ -651,6 +651,8 @@ _exclude:
   - "{% if language == 'java' %}/.bandit{% endif %}"
   - "{% if language == 'java' %}/.pre-commit-config.yaml{% endif %}"
   - "{% if language == 'java' %}.github/workflows/ci.yml{% endif %}"
+  - "{% if language == 'java' %}/ayuda{% endif %}"
+  - "{% if language == 'java' %}/.github{% endif %}"
   - "{% if language != 'java' %}/pom.xml{% endif %}"
   - "{% if language != 'java' %}/mvnw{% endif %}"
   - "{% if language != 'java' %}/mvnw.cmd{% endif %}"

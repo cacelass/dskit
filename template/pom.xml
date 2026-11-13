@@ -60,6 +60,15 @@
       <scope>runtime</scope>
     </dependency>
 {% endif %}
+{% if db != 'h2' %}
+    <!-- Los tests corren contra H2 en memoria (application-test.yml) aunque la
+         BD de produccion sea otra: contextLoads no debe exigir un servicio. -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+{% endif %}
 {% if migrations == 'flyway' %}
     <dependency>
       <groupId>org.flywaydb</groupId>

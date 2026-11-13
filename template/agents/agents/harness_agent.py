@@ -17,7 +17,9 @@ forma de saltársela pidiéndoselo amablemente al modelo.
 from __future__ import annotations
 
 import json
+import os
 import re
+import shutil
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -28,6 +30,32 @@ from agents.rubric import CRITERIOS_PUERTA, UMBRAL_CERTEZA
 from agents.tools.process_tool import run_command
 
 VALID_STATUS = ("pending", "spec_ready", "in_progress", "done", "blocked")
+
+
+def _bash_command(script: Path, quick: bool = False) -> list[str]:
+    """
+    Localiza un bash utilizable. En Windows, `bash` del PATH suele ser el stub
+    de WSL (`C:\\Windows\\System32\\bash.exe`), que falla si no hay distro
+    instalada; se prefiere Git Bash cuando existe. En el resto de sistemas se
+    usa el `bash` del PATH.
+    """
+    candidates: list[str] = []
+    if os.name == "nt":
+        for env in ("ProgramFiles", "ProgramFiles(x86)"):
+            base = os.environ.get(env)
+            if base:
+                candidates.append(str(Path(base) / "Git" / "bin" / "bash.exe"))
+                candidates.append(str(Path(base) / "Git" / "usr" / "bin" / "bash.exe"))
+        git_path = shutil.which("git")
+        if git_path:
+            git_root = Path(git_path).resolve().parent.parent
+            candidates.append(str(git_root / "bin" / "bash.exe"))
+            candidates.append(str(git_root / "usr" / "bin" / "bash.exe"))
+    bash = next((c for c in candidates if Path(c).exists()), "bash")
+    args = [bash, str(script), "--json"]
+    if quick:
+        args.append("--quick")
+    return args
 REQUIRED_FIELDS = ("id", "title", "description", "acceptance_criteria", "status")
 
 #: Rechazos seguidos del reviewer antes de bloquear la feature y escalar.
@@ -861,9 +889,7 @@ class HarnessAgent(BaseAgent):
         if not script.exists():
             return self._fail("gate", "No existe init.sh: el arnés no tiene puerta.")
 
-        args = ["bash", str(script), "--json"]
-        if quick:
-            args.append("--quick")
+        args = _bash_command(script, quick)
         proc = run_command(args, cwd=self.ctx.root, timeout=900)
 
         try:

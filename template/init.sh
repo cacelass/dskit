@@ -17,6 +17,10 @@
 #
 set -uo pipefail
 
+# Salida UTF-8 tambien en Windows (cp1252 rompe los detalles con acentos o
+# guiones largos al imprimir el JSON del veredicto).
+export PYTHONUTF8=1
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT" || exit 1
 

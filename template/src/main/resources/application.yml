@@ -22,4 +22,8 @@ spring:
       # Fase 1: Spring Batch crea su esquema BATCH_*. La feature JAVA-007
       # (agente migrations) pasa a ser la dueña de esas tablas.
       initialize-schema: always
+    job:
+      # Con varios jobs, Spring Boot exige elegir uno. Cambia JOB_NAME o pasa
+      # --spring.batch.job.name=<job> para ejecutar otro.
+      name: ${JOB_NAME:demoJob}
 {% endif %}

@@ -4,6 +4,10 @@ spring:
     driver-class-name: org.h2.Driver
 {% if 'batch' in framework %}
   batch:
+    job:
+      # Los tests lanzan los jobs explicitamente (JobLauncherTestUtils); el
+      # runner de arranque no debe ejecutarlos al cargar el contexto.
+      enabled: false
     jdbc:
       initialize-schema: always
 {% endif %}

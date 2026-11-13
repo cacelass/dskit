@@ -155,7 +155,12 @@ class GStack:
 
     def _try_lock(self) -> Any | None:
         """Lock exclusivo no bloqueante. `None` = ya tomado; `_NO_LOCK` = no se pudo crear."""
-        import fcntl
+        try:
+            import fcntl
+        except ImportError:
+            # Windows no tiene fcntl: se trabaja sin lock (fail-open, la misma
+            # filosofia que un filesystem que no deja crear el fichero).
+            return _NO_LOCK
 
         try:
             lock_dir = self._ctx.agent_workspace("gstack")
