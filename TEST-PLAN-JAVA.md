@@ -101,6 +101,7 @@ Cada hallazgo se anota con severidad, fix propuesto y feature asociada:
 | F11 | `init.sh --json` en Windows: `UnicodeEncodeError` (cp1252) | Alta | `export PYTHONUTF8=1` en la puerta | JAVA-002 | Corregido |
 | F12 | `make` no instalado en Windows local: targets no ejecutables | Baja (entorno) | — (CI Linux los cubre) | — | Nota |
 | F13 | `prompts_sync` modifica prompts en render con `--skip-tasks` | Baja (entorno) | Esperado: la tarea de copier los sincroniza | — | Nota |
+| F14 | `template/.vscode/extensions.json` no estaba versionado en el fork (lo ignoraba el `.gitignore` raíz) | Media | `git add -f` (queda versionado) | — | Corregido |
 
 Reglas:
 
