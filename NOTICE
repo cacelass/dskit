@@ -1,0 +1,29 @@
+dskit
+=====
+
+Obra original
+-------------
+dskit — Template profesional para Data Science y AI Engineering
+Copyright 2026 cacelass
+https://github.com/cacelass/dskit
+Licenciado bajo Apache License, Version 2.0 (ver LICENSE).
+
+Esta distribucion es una obra derivada
+--------------------------------------
+Adaptacion del arnes y del template para desarrollo Java (Spring Boot /
+Spring Batch), mantenida por poganmart desde 2026 sobre la obra original.
+
+Cambios principales respecto a la obra original
+-----------------------------------------------
+- Variable `language` (python | java) y arbol Java nuevo: pom.xml, wrapper
+  de Maven, src/main/java, src/test/java y migraciones semilla.
+- Puerta `init.sh` con JDK, wrapper y `./mvnw verify` + contextLoads.
+- Makefile Java como fachada fina sobre `./mvnw`.
+- Validadores de CI con combos Java fijados y normalizacion de rutas.
+- Spec y plan de la adaptacion: SPEC-JAVA.md y PLAN-JAVA.md.
+- En curso: poda/reescritura de agentes del nucleo, dominios batch,
+  migrations, security, api, architecture y observabilidad, y CI Java.
+
+Los ficheros modificados conservan la licencia Apache-2.0 y el aviso de
+copyright de la obra original. El historial de git previo a la adaptacion
+tambien se conserva.

@@ -345,3 +345,40 @@ dependencias, siguiendo la filosofía de `template/.opencode/agents/lider.md`
 - **AUTOGEN manual**: sobre el template no corre `prompts_sync` (Jinja2 rompe
   imports); las filas claim/release del bloque AUTOGEN de harness_agent.md se
   añadieron a mano y deben coincidir con lo que generaría `make prompts-sync`.
+
+## Java: adaptación del arnés (Nov 2026)
+
+- Spec en `SPEC-JAVA.md` (JAVA-001..015) y plan en `PLAN-JAVA.md`. Decisión
+  **A1**: un solo árbol `template/` con variable `language` (python|java);
+  el foso de gobierno no se duplica. Spike de Fase 0: núcleo con **0 líneas
+  cambiadas**, harness eval **14/14**, contracts PASS, puerta `mvnw verify` +
+  `contextLoads` verde.
+- Implementado JAVA-001 + JAVA-002 (v1, maven): `language` + variables Java en
+  `copier.yml` (build_tool=maven, java_version 17|21|25, base_package[_path],
+  framework spring-boot[-batch|-web+batch], db, migrations, use_security,
+  use_testcontainers, use_pit, use_archunit, use_observability), árbol
+  `template/src/` + `pom.xml` + wrapper `.mvn`, y gate Java en `init.sh`.
+  Render Java estandar: `./init.sh` verde con 0 avisos; render Python sin
+  regresión (solo líneas en blanco nuevas).
+- **Lección `_exclude`**: usa sintaxis gitignore; un patrón sin `/` inicial
+  (`tools`, `tests`) excluye también `agents/tools/` y `agents/tests/`.
+  Anclar siempre los de raíz (`/tools`). Lo cazó el eval `harness/contracts`
+  con `No module named 'agents.tools'`.
+- **Lección Windows**: los directorios del template no pueden llevar `|` en el
+  nombre → `base_package_path` derivada en copier.yml. `validate_template.py`
+  necesitaba `replace("\\", "/")` para excluir `.vscode/` (JSONC) en Windows.
+- **ArchUnit** no está en el BOM de Spring Boot: versión propia
+  (`archunit.version`). `use_archunit/use_testcontainers/use_pit` vienen on en
+  estandar, off en minimo, on en completo.
+- Pendiente Fase 1: JAVA-003 (seeds de backlog Java), JAVA-005 (poda de
+  data/ml/mlflow/notebook + reescritura de test/doctor/dependency/cicd/make/
+  doc/graph/env/plan/refactor), `gradle` (JAVA-001b), README Java. El combo
+  Java en la matriz smoke de CI es JAVA-013; hasta entonces el render Java se
+  cubre con los combos fijados de `validate_template.py`.
+- Verificación local: `uvx copier copy --trust --defaults --skip-tasks
+  --data-file <java.yml> <src> <dst>` con `src` copiado a /tmp SIN `.git`
+  (regla del mirror); puerta con Git Bash (`bash ./init.sh`).
+- **Repo derivado**: basado en `cacelass/dskit` (Apache-2.0). Atribución en
+  `NOTICE` + README; el remoto `upstream` apunta al original con el push
+  deshabilitado, y el `origin` propio lo añade el usuario al publicar.
+

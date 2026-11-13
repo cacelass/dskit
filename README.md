@@ -12,6 +12,10 @@ Plantilla [copier](https://copier.readthedocs.io) para iniciar proyectos de ML d
 
 Y con un **arnés de IA** dentro del propio repositorio: un entorno que gobierna cómo trabajan los agentes sobre el proyecto, con puerta de entrada, backlog verificable y una definición de «hecho» que se aplica en código, no pidiéndosela al modelo.
 
+> **Obra derivada.** Este repositorio parte de [dskit](https://github.com/cacelass/dskit)
+> de [cacelass](https://github.com/cacelass) (Apache-2.0) y lo adapta para
+> desarrollo Java (Spring Boot / Spring Batch). Ver [Créditos y origen](#créditos-y-origen).
+
 ---
 
 ## Índice
@@ -465,6 +469,22 @@ nombre_proyecto/
 ## Changelog
 
 Ver [CHANGELOG.md](CHANGELOG.md).
+
+---
+
+## Créditos y origen
+
+Este proyecto es una **obra derivada** de [dskit](https://github.com/cacelass/dskit),
+creado por [cacelass](https://github.com/cacelass) y publicado bajo
+Apache-2.0. Se conservan la licencia, el aviso de copyright y el historial de
+git original.
+
+La adaptación para Java (Spring Boot / Spring Batch) —variable `language`,
+template Java, puerta `./mvnw verify`, y los dominios y agentes Java— está
+mantenida por **poganmart** desde 2026. Los cambios principales se detallan en
+[NOTICE](NOTICE) y en [SPEC-JAVA.md](SPEC-JAVA.md) / [PLAN-JAVA.md](PLAN-JAVA.md).
+
+Si reutilizas este trabajo, mantén también la atribución a la obra original.
 
 ---
 

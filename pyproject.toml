@@ -3,7 +3,8 @@ name = "dskit"
 version = "1.16.0"
 description = "Template profesional para Data Science y AI Engineering"
 authors = [
-  { name = "cacelass" }
+  { name = "cacelass" },
+  { name = "poganmart" },
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
