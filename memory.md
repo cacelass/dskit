@@ -379,6 +379,7 @@ dependencias, siguiendo la filosofía de `template/.opencode/agents/lider.md`
   --data-file <java.yml> <src> <dst>` con `src` copiado a /tmp SIN `.git`
   (regla del mirror); puerta con Git Bash (`bash ./init.sh`).
 - **Repo derivado**: fork `Pedro0020/dskit-JAVA` de `cacelass/dskit`
-  (Apache-2.0). Atribución en `NOTICE` + `CREDITS.md` + README; `origin` =
-  fork propio y `upstream` = original (solo fetch).
+  (Apache-2.0), centrado en Java. Atribución en `NOTICE` + `CREDITS.md` +
+  README. Remoto `origin` = fork propio; `upstream` (original DS) eliminado
+  porque no se sincroniza.
 

@@ -1,3 +1,62 @@
+{% if language == 'java' %}
+# {{ project_name }}
+
+![Java](https://img.shields.io/badge/Java-{{ java_version }}%2B-blue?logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-6DB33F?logo=springboot&logoColor=white)
+![Version](https://img.shields.io/badge/Version-{{ project_version }}-green)
+![Author](https://img.shields.io/badge/Author-{{ project_author_name | replace(" ", "%20") | replace("-", "--") }}-blueviolet)
+![Template](https://img.shields.io/badge/Generado%20con-dskit--JAVA-58a6ff?logo=github)
+
+Proyecto Java ({{ framework }}) generado con **[dskit-JAVA](https://github.com/Pedro0020/dskit-JAVA)**, fork de [dskit](https://github.com/cacelass/dskit).
+
+## Requisitos
+
+- JDK {{ java_version }}+
+- Python 3.10+ y [`uv`](https://docs.astral.sh/uv/) para el plano de control del arnés
+- Bash (Git Bash o WSL en Windows) para `./init.sh`
+- El wrapper de Maven viene incluido: no hace falta Maven instalado
+
+## Arranque
+
+```bash
+./mvnw verify      # build + tests
+./init.sh          # la puerta del arnés
+make help
+```
+
+## Estructura
+
+```
+src/main/java/{{ base_package_path }}/    código
+src/test/java/{{ base_package_path }}/    tests
+src/main/resources/                       application.yml + migraciones
+harness/                                  backlog y progreso del arnés
+agents/                                   plano de control (Python)
+.opencode/agents/                         lider, explorer, implementer, reviewer
+```
+
+## Comandos
+
+| Comando | Qué hace |
+|---|---|
+| `./mvnw verify` | build + tests |
+| `./init.sh` | la puerta del arnés |
+| `make init` | lo mismo, vía Makefile |
+| `make backlog` | estado de `harness/featureslist.json` |
+| `make agents-list` | agentes del plano de control |
+| `make agents-eval` | harness + contracts |
+| `make clean` | `./mvnw clean` |
+
+## Arnés
+
+La regla que no se salta: ninguna feature se marca `done` sin que `./init.sh`
+pase en verde y sin evidencia real del comando que lo demuestra. `harness
+finish` lo aplica en código. Protocolo completo en `AGENTS.md`.
+
+---
+
+Generado con [dskit-JAVA](https://github.com/Pedro0020/dskit-JAVA) (fork de [dskit](https://github.com/cacelass/dskit)) · Apache-2.0.
+{% else %}
 # {{ project_name }}
 
 ![Python](https://img.shields.io/badge/Python-{{ python_version }}+-blue?logo=python&logoColor=white)
@@ -299,3 +358,4 @@ Abre `docs/vault/` como carpeta en Obsidian para explorar y documentar el proyec
 ---
 
 Template generado con https://github.com/Pedro0020/dskit-JAVA (fork de https://github.com/cacelass/dskit)
+{% endif %}

@@ -1,7 +1,7 @@
 [project]
 name = "dskit"
 version = "1.16.0"
-description = "Template profesional para Data Science y AI Engineering"
+description = "Template copier para Java (Spring Boot / Spring Batch) con arnes de IA"
 authors = [
   { name = "cacelass" },
   { name = "poganmart" },
