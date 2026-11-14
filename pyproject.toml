@@ -1,6 +1,6 @@
 [project]
 name = "dskit"
-version = "1.16.0"
+version = "2.0.0"
 description = "Template copier para Java (Spring Boot / Spring Batch) con arnes de IA"
 authors = [
   { name = "cacelass" },

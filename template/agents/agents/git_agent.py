@@ -125,7 +125,7 @@ class GitAgent(BaseAgent):
         if guard:
             return guard
 
-        changed = self.git.changed_files(staged=staged)
+        changed = self.git.changed_files(staged=staged) or self._proposed_files()
         if not changed:
             return AgentResult(
                 False, self.name, "suggest_commit_message",
@@ -461,7 +461,7 @@ class GitAgent(BaseAgent):
                     "suggested_message": suggested, "changed_files": changed,
                 },
                 warnings=(
-                    ["No se pudo leer la versión en pyproject.toml — se omite el bump."]
+                    ["No se pudo leer la versión en pyproject.toml/pom.xml — se omite el bump."]
                     if not next_version else []
                 ),
             )
@@ -508,12 +508,23 @@ class GitAgent(BaseAgent):
         )
 
     def _next_patch_version(self) -> str | None:
-        """Lee `version = "X.Y.Z"` de pyproject.toml y devuelve el siguiente patch."""
+        """Lee la version del proyecto (pyproject.toml o pom.xml) y sube el patch."""
         pyproject = self.ctx.pyproject_file
-        if not pyproject.exists():
-            return None
-        match = re.search(r'^version\s*=\s*"(\d+)\.(\d+)\.(\d+)"',
-                          pyproject.read_text(encoding="utf-8"), re.MULTILINE)
+        if pyproject.exists():
+            match = re.search(
+                r'^version\s*=\s*"(\d+)\.(\d+)\.(\d+)"',
+                pyproject.read_text(encoding="utf-8"),
+                re.MULTILINE,
+            )
+        else:
+            pom = self.ctx.root / "pom.xml"
+            if not pom.exists():
+                return None
+            text = pom.read_text(encoding="utf-8")
+            # El primer <version> del pom es el del parent; la version del
+            # proyecto vive despues de </parent>.
+            after_parent = text.split("</parent>", 1)[-1] if "</parent>" in text else text
+            match = re.search(r"<version>(\d+)\.(\d+)\.(\d+)</version>", after_parent)
         if not match:
             return None
         major, minor, patch = (int(g) for g in match.groups())

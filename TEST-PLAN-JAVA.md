@@ -102,6 +102,7 @@ Cada hallazgo se anota con severidad, fix propuesto y feature asociada:
 | F12 | `make` no instalado en Windows local: targets no ejecutables | Baja (entorno) | — (CI Linux los cubre) | — | Nota |
 | F13 | `prompts_sync` modifica prompts en render con `--skip-tasks` | Baja (entorno) | Esperado: la tarea de copier los sincroniza | — | Nota |
 | F14 | `template/.vscode/extensions.json` no estaba versionado en el fork (lo ignoraba el `.gitignore` raíz) | Media | `git add -f` (queda versionado) | — | Corregido |
+| F15 | El template no incluía la plantilla de `.copier-answers.yml`: copier no lo generaba → `copier update` roto y agentes sin `language`/`project_slug` | **Crítica** | `template/.copier-answers.yml` con `_copier_answers \| to_nice_yaml` | JAVA-001/002 | Corregido |
 
 Reglas:
 
@@ -153,5 +154,5 @@ Proyecto de prueba: procesador de pedidos (CSV → IVA 21% → CSV) con lectura
 `FlatFileItemReader`, procesador, writer, tests end-to-end y de re-ejecución.
 
 Cambios aplicados al template durante la prueba: F1, F2, F3, F4, F5, F8,
-F11 y F14. Registrados para sus features: F6 (JAVA-003) y F7/F9/F10
+F11, F14 y F15. Registrados para sus features: F6 (JAVA-003) y F7/F9/F10
 (JAVA-005).

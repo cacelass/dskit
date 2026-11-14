@@ -7,6 +7,7 @@ El arnés —la capa que gobierna cómo trabajan los agentes sobre el proyecto�
 mantiene intacto: puerta de entrada, backlog verificable y una definición de
 «hecho» que se aplica en código, no pidiéndosela al modelo.
 
+![version](https://img.shields.io/badge/dskit-2.0.0-blue)
 ![CI](https://github.com/Pedro0020/dskit-JAVA/actions/workflows/ci.yml/badge.svg)
 [![based on dskit](https://img.shields.io/badge/based_on-dskit_by_cacelass-blueviolet)](https://github.com/cacelass/dskit)
 ![license](https://img.shields.io/badge/license-Apache--2.0-green)

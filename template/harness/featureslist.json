@@ -3,6 +3,116 @@
   "version": 1,
   "project": "{{ project_name }}",
   "features": [
+{% if language == 'java' %}
+    {
+      "id": "SCOPE-001",
+      "title": "Definir el objetivo y la métrica",
+      "description": "Antes de tocar código: qué problema resuelve este servicio o batch, cómo se mide que funciona (métrica con umbral), qué datos/servicios consume y cuándo se da por terminado. Sin ese criterio, ninguna decisión posterior (arquitectura, modelo de datos, jobs) se puede evaluar.",
+      "acceptance_criteria": [
+        "references/00-objetivo.md existe con objetivo, métrica con umbral numérico, alcance y criterio de parada",
+        "La métrica es medible (p. ej. 'p99 < 200 ms', 'pedidos sin error >= 99.9%', 'cobertura >= 80%')",
+        "El README describe el objetivo en una frase propia, no con el texto de la plantilla",
+        "./mvnw verify termina en verde",
+        "./init.sh termina con ENTORNO LISTO"
+      ],
+      "status": "pending",
+      "depends_on": []
+    },
+    {
+      "id": "ARCH-001",
+      "title": "Arquitectura y límites entre capas",
+      "description": "Fijar paquetes y dependencias permitidas (controller -> service -> repository; batch separado del dominio) y dejarlo por escrito antes de que el código fije la arquitectura por accidente.",
+      "acceptance_criteria": [
+        "references/01-arquitectura.md describe capas, paquetes y dependencias permitidas",
+        "Existe al menos un test de límites con ArchUnit (si use_archunit) que falla al violarlos",
+        "./mvnw verify termina en verde",
+        "./init.sh termina con ENTORNO LISTO"
+      ],
+      "status": "pending",
+      "depends_on": ["SCOPE-001"]
+    },
+{% if db != 'none' %}    {
+      "id": "DB-001",
+      "title": "Modelo de datos y migraciones",
+      "description": "Modelar las tablas del dominio y versionar el esquema con migraciones reproducibles. Una migración, un dueño; nada de cambios manuales en la base.",
+      "acceptance_criteria": [
+        "El esquema se crea desde cero aplicando db/migration/ (Flyway) o db/changelog/ (Liquibase)",
+        "Existe una migración versionada para cada cambio de esquema",
+        "La aplicación arranca con el esquema aplicado y contextLoads en verde",
+        "./mvnw verify termina en verde"
+      ],
+      "status": "pending",
+      "depends_on": ["ARCH-001"]
+    },
+{% endif %}{% if 'batch' in framework %}    {
+      "id": "JOB-001",
+      "title": "Job batch reiniciable e idempotente",
+      "description": "Implementar el primer job real con procesamiento por chunks: lector, procesador y writer con transacción. Relanzar con nuevos parámetros no debe duplicar datos; un fallo debe poder reanudarse.",
+      "acceptance_criteria": [
+        "El job corre end-to-end sobre un dataset controlado y deja la salida esperada",
+        "Relanzar con nuevos job parameters no duplica filas en la salida",
+        "El writer es transaccional e idempotente",
+        "Existe un test de integración del job (JobLauncher o @SpringBatchTest) en verde",
+        "./mvnw verify termina en verde"
+      ],
+      "status": "pending",
+      "depends_on": ["DB-001"]
+    },
+{% endif %}{% if framework != 'spring-boot-batch' %}    {
+      "id": "API-001",
+      "title": "API REST versionada",
+      "description": "Exponer el dominio por HTTP con DTOs validados, errores claros y versión de API. Sin filtrar entidades ni stack traces.",
+      "acceptance_criteria": [
+        "Existe un endpoint /api/v1/... con DTOs y Bean Validation",
+        "Un payload inválido devuelve 400/422, nunca 500",
+        "OpenAPI se genera y documenta los endpoints",
+        "Existe un test de controller (MockMvc) en verde",
+        "./mvnw verify termina en verde"
+      ],
+      "status": "pending",
+      "depends_on": ["ARCH-001"]
+    },
+{% endif %}{% if use_security %}    {
+      "id": "SEC-001",
+      "title": "Seguridad de la API y endpoints de gestión",
+      "description": "Configurar Spring Security para el modelo de autenticación elegido y asegurar que los endpoints de gestión no quedan expuestos.",
+      "acceptance_criteria": [
+        "Los endpoints protegidos rechazan peticiones sin credenciales (401/403)",
+        "Los endpoints de actuator no son públicos en producción",
+        "CORS y cabeceras de seguridad están configurados explícitamente",
+        "Existe un test de seguridad en verde",
+        "./mvnw verify termina en verde"
+      ],
+      "status": "pending",
+      "depends_on": ["ARCH-001"]
+    },
+{% endif %}{% if use_observability %}    {
+      "id": "OBS-001",
+      "title": "Observabilidad: salud, métricas y trazas",
+      "description": "Actuator y Micrometer con health real, métricas del job y logs correlacionables. Sin health check no hay operación.",
+      "acceptance_criteria": [
+        "/actuator/health responde y refleja el estado real (DB incluida)",
+        "Hay métricas por step del job (duración y errores) y endpoint Prometheus",
+        "Los logs incluyen traceId (MDC) y no exponen secretos",
+        "./mvnw verify termina en verde"
+      ],
+      "status": "pending",
+      "depends_on": ["ARCH-001"]
+    },
+{% endif %}    {
+      "id": "CI-001",
+      "title": "Pipeline de CI en verde",
+      "description": "Dejar el build reproducible en CI: compilación, tests, cobertura y análisis de seguridad con la versión de Java elegida.",
+      "acceptance_criteria": [
+        "El workflow de CI ejecuta ./mvnw verify en un clon limpio",
+        "La cobertura se publica y respeta el umbral configurado",
+        "El análisis de seguridad (Trivy/SBOM) no reporta vulnerabilidades críticas sin justificar",
+        "El badge de CI del README refleja el estado real"
+      ],
+      "status": "pending",
+      "depends_on": ["SCOPE-001"]
+    }
+{% else %}
     {
   "id": "SCOPE-001",
   "title": "Definir qué se quiere resolver",
@@ -179,5 +289,6 @@
       "status": "pending",
       "depends_on": []
     }{% endif %}
+{% endif %}
   ]
 }

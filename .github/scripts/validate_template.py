@@ -12,6 +12,8 @@ import json
 import sys
 from pathlib import Path
 
+import yaml
+
 try:
     from jinja2 import BaseLoader, Environment, StrictUndefined, TemplateSyntaxError, UndefinedError
 except ImportError:
@@ -343,6 +345,11 @@ def validate_claude_mirror() -> list[str]:
 
 
 env = Environment(loader=BaseLoader(), undefined=StrictUndefined, keep_trailing_newline=True)
+# Copier usa el filtro `to_nice_yaml` (Ansible) para el .copier-answers.yml.
+# El validador simula el contexto minimo para poder renderizarlo.
+env.filters["to_nice_yaml"] = lambda value, **kwargs: yaml.safe_dump(
+    value, allow_unicode=True, sort_keys=False
+)
 bugs: list[tuple[str, str, str]] = []
 
 
@@ -373,7 +380,7 @@ print(f"Checks totales: {len(COMBOS) * len(ALL_FILES)}")
 print()
 
 for label, combo in COMBOS:
-    ctx = {**STD, **DEFAULTS, **combo}
+    ctx = {**STD, **DEFAULTS, **combo, "_copier_answers": {}}
     for rel in ALL_FILES:
         raw = (BASE / rel).read_text(errors="replace")
         try:

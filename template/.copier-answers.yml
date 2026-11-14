@@ -1,0 +1,4 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY.
+# Este fichero permite `copier update` y es lo que leen los agentes para
+# conocer language, project_slug, framework, db, etc.
+{{ _copier_answers | to_nice_yaml -}}

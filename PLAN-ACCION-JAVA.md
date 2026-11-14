@@ -279,3 +279,17 @@ Ejecutar **H0**: A0.3 (versionado, 10 min) → A0.1 (semilla de backlog) →
 A0.2 (fixes language-aware). Al cerrar H0, el informe E2E queda sin hallazgos
 abiertos y se arranca A1.1, que es lo que convierte la puerta en una garantía
 real para Java.
+
+## 7. Estado de ejecución
+
+- **H0 — COMPLETADO (Nov 2026).**
+  - A0.3: versión del fork fijada a `2.0.0` (pyproject, README, copier.yml),
+    tag `v2.0.0`.
+  - A0.1: backlog Java condicional (SCOPE/ARCH/DB/JOB/API/SEC/OBS/CI).
+  - A0.2: agentes language-aware: `commit_feature`/`bump_version` con
+    `pom.xml`, `suggest_commit_message` con untracked, `doctor`/`env` con
+    checks Java.
+  - **F15 corregido:** `template/.copier-answers.yml` (copier no lo generaba;
+    sin él `copier update` y `language`/`project_slug` estaban rotos).
+  - Verificado en render limpio: doctor 8/8 Java, `next_version=0.1.1`,
+    untracked detectado, `harness next` propone SCOPE-001 Java.

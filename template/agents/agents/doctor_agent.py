@@ -7,6 +7,8 @@ estructura de datos, código, tests, dependencias y configuración.
 
 from __future__ import annotations
 
+import os
+import re
 import sys
 from pathlib import Path
 
@@ -82,13 +84,19 @@ class DoctorAgent(BaseAgent):
 
     def checkup(self) -> AgentResult:
         """Ejecuta todas las verificaciones y devuelve un dict con el estado."""
+        language = self._language()
+        platform_key = "jdk" if language == "java" else "python"
         checks = {
-            "python": self._check_python(),
+            platform_key: (
+                self._check_jdk() if language == "java" else self._check_python()
+            ),
             "git": self._check_git(),
             "project_config": self._check_project_config(),
             "structure": self._check_structure(),
             "tests": self._check_tests(),
-            "lock": self._check_lock_sync(),
+            ("wrapper" if language == "java" else "lock"): (
+                self._check_wrapper() if language == "java" else self._check_lock_sync()
+            ),
             "data": self._check_data(),
             "harness": self._check_harness(),
         }
@@ -108,13 +116,20 @@ class DoctorAgent(BaseAgent):
 
     def disk_usage(self) -> AgentResult:
         """Muestra el tamaño de los directorios principales del proyecto."""
-        dirs = {
-            "data": self.ctx.data_dir,
-            "models": self.ctx.models_dir,
-            "reports": self.ctx.reports_dir,
-            "notebooks": self.ctx.notebooks_dir,
-            "agents/workspace": self.ctx.workspace_dir,
-        }
+        if self._language() == "java":
+            dirs = {
+                "src": self.ctx.root / "src",
+                "target": self.ctx.root / "target",
+                "agents/workspace": self.ctx.workspace_dir,
+            }
+        else:
+            dirs = {
+                "data": self.ctx.data_dir,
+                "models": self.ctx.models_dir,
+                "reports": self.ctx.reports_dir,
+                "notebooks": self.ctx.notebooks_dir,
+                "agents/workspace": self.ctx.workspace_dir,
+            }
         sizes = {}
         for label, path in dirs.items():
             if path.exists():
@@ -133,6 +148,25 @@ class DoctorAgent(BaseAgent):
             ["git", "log", "--oneline", "-5"], cwd=self.ctx.root
         )
         git_log = git_result.stdout.strip() if git_result.ok else "no disponible"
+        if self._language() == "java":
+            tests_dir = self.ctx.root / "src" / "test" / "java"
+            test_files = (
+                list(tests_dir.rglob("*Test.java")) + list(tests_dir.rglob("*Tests.java"))
+                if tests_dir.exists()
+                else []
+            )
+            data = {
+                "project": self.ctx.config.project_name,
+                "language": "java",
+                "framework": self.ctx.config.extra.get("framework"),
+                "db": self.ctx.config.extra.get("db"),
+                "test_files": len(test_files),
+                "git_log": git_log,
+            }
+            return AgentResult(
+                True, self.name, "summary",
+                f"{self.ctx.config.project_name} (java)", data=data,
+            )
         project_name = (
             pyproject.get("project", {}).get("name", "desconocido")
             if pyproject else "desconocido"
@@ -152,6 +186,38 @@ class DoctorAgent(BaseAgent):
         return AgentResult(True, self.name, "summary", f"{project_name} ({self.ctx.config.ml_type})", data=data)
 
     # ---- helpers internos ----
+
+    def _language(self) -> str:
+        """Lenguaje del proyecto segun .copier-answers.yml (default: python)."""
+        return str(self.ctx.config.extra.get("language", "python")).lower()
+
+    def _check_jdk(self) -> dict:
+        result = run_command(["java", "-version"], cwd=self.ctx.root)
+        raw = f"{result.stderr}\n{result.stdout}"
+        match = re.search(r'version "(\d+)(?:\.(\d+))?', raw)
+        if not match:
+            return {"ok": False, "message": "java no disponible en PATH"}
+        major, minor = int(match.group(1)), int(match.group(2) or 0)
+        if major == 1:  # Java 8 reporta "1.8"
+            major = minor
+        required = str(self.ctx.config.extra.get("java_version", "17")).split(".")[0]
+        try:
+            required_n = int(required)
+        except ValueError:
+            required_n = 17
+        estado = "cumple" if major >= required_n else "NO cumple"
+        return {
+            "ok": major >= required_n,
+            "message": f"Java {major} {estado} (requiere {required_n}+)",
+        }
+
+    def _check_wrapper(self) -> dict:
+        mvnw = self.ctx.root / ("mvnw.cmd" if os.name == "nt" else "mvnw")
+        props = self.ctx.root / ".mvn" / "wrapper" / "maven-wrapper.properties"
+        missing = [str(p) for p in (mvnw, props) if not p.exists()]
+        if missing:
+            return {"ok": False, "message": f"falta el wrapper de Maven: {', '.join(missing)}"}
+        return {"ok": True, "message": "wrapper de Maven presente"}
 
     def _load_pyproject(self) -> dict | None:
         import tomllib
@@ -195,12 +261,31 @@ class DoctorAgent(BaseAgent):
         config = self.ctx.config
         if not config.project_slug:
             return {"ok": False, "message": "configuración del proyecto no encontrada"}
+        if self._language() == "java":
+            extra = config.extra
+            return {
+                "ok": True,
+                "message": (
+                    f"{config.project_slug} (language=java, "
+                    f"framework={extra.get('framework', '?')}, db={extra.get('db', '?')})"
+                ),
+            }
         return {
             "ok": True,
             "message": f"{config.project_slug} (ml_type={config.ml_type}, mlflow={config.use_mlflow})",
         }
 
     def _check_structure(self) -> dict:
+        if self._language() == "java":
+            required = [
+                self.ctx.root / "pom.xml",
+                self.ctx.root / "src" / "main" / "java",
+                self.ctx.root / "src" / "test" / "java",
+            ]
+            missing = [str(p) for p in required if not p.exists()]
+            if missing:
+                return {"ok": False, "message": f"faltan: {', '.join(missing)}"}
+            return {"ok": True, "message": "estructura Java correcta"}
         required = [
             self.ctx.package_dir / "__init__.py",
             self.ctx.pyproject_file,
@@ -211,6 +296,14 @@ class DoctorAgent(BaseAgent):
         return {"ok": True, "message": "estructura del proyecto correcta"}
 
     def _check_tests(self) -> dict:
+        if self._language() == "java":
+            tests_dir = self.ctx.root / "src" / "test" / "java"
+            if not tests_dir.exists():
+                return {"ok": False, "message": "falta src/test/java/"}
+            test_files = list(tests_dir.rglob("*Test.java")) + list(tests_dir.rglob("*Tests.java"))
+            if not test_files:
+                return {"ok": False, "message": "src/test/java/ existe pero no contiene tests"}
+            return {"ok": True, "message": f"{len(test_files)} archivo(s) de test Java"}
         tests_dir = self.ctx.tests_dir
         if not tests_dir.exists():
             return {"ok": True, "message": "directorio tests/ no existe (puede no ser necesario)"}
@@ -256,6 +349,8 @@ class DoctorAgent(BaseAgent):
         return {"ok": False, "message": "uv.lock desincronizado (corre 'uv lock')"}
 
     def _check_data(self) -> dict:
+        if self._language() == "java":
+            return {"ok": True, "message": "no aplica en proyectos Java"}
         raw = self.ctx.raw_data_dir
         if not raw.exists():
             return {"ok": True, "message": "data/raw/ no existe (proyecto nuevo)"}

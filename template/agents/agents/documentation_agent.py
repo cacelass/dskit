@@ -371,6 +371,22 @@ class DocumentationAgent(BaseAgent):
         else:
             warnings.append("No existe pyproject.toml en la raíz del proyecto.")
 
+        # Proyectos Java: la version del proyecto vive en pom.xml (despues del
+        # bloque <parent>, que tiene su propia <version>).
+        pom_path = self.ctx.root / "pom.xml"
+        if pom_path.exists():
+            text = pom_path.read_text(encoding="utf-8")
+            if "</parent>" in text:
+                head, tail = text.split("</parent>", 1)
+                new_tail, n = re.subn(
+                    r"<version>[^<]+</version>", f"<version>{new_version}</version>", tail, count=1
+                )
+                if n:
+                    pom_path.write_text(head + "</parent>" + new_tail, encoding="utf-8")
+                    changed_files.append("pom.xml")
+                else:
+                    warnings.append("No se encontró la versión del proyecto en pom.xml — no se tocó.")
+
         if self.ctx.readme_file.exists():
             text = self.ctx.readme_file.read_text(encoding="utf-8")
             text, n_badge = re.subn(r"Version-[^-]+-green", f"Version-{new_version}-green", text, count=1)
@@ -380,7 +396,7 @@ class DocumentationAgent(BaseAgent):
                 changed_files.append(str(self.ctx.readme_file.relative_to(self.ctx.root)))
             if not n_badge:
                 warnings.append("No se encontró el badge 'Version-X-green' en README.md.")
-            if not n_line:
+            if n_badge and not n_line:
                 warnings.append("No se encontró la línea '**Versión:** X' en README.md.")
         else:
             warnings.append("No existe README.md en la raíz del proyecto.")
