@@ -20,18 +20,18 @@ public class DemoJobConfig {
 
     @Bean
     public Job demoJob(JobRepository jobRepository, Step demoStep) {
-        return new JobBuilder("demoJob", jobRepository)
-                .start(demoStep)
-                .build();
+        return new JobBuilder("demoJob", jobRepository).start(demoStep).build();
     }
 
     @Bean
     public Step demoStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("demoStep", jobRepository)
-                .tasklet((contribution, chunkContext) -> {
-                    System.out.println("demoJob: arnes listo — sustituye este tasklet por el job real");
-                    return RepeatStatus.FINISHED;
-                }, transactionManager)
+                .tasklet(
+                        (contribution, chunkContext) -> {
+                            System.out.println("demoJob: arnes listo — sustituye este tasklet por el job real");
+                            return RepeatStatus.FINISHED;
+                        },
+                        transactionManager)
                 .build();
     }
 }

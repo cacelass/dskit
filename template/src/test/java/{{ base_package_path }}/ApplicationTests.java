@@ -13,6 +13,5 @@ import org.springframework.test.context.ActiveProfiles;
 class ApplicationTests {
 
     @Test
-    void contextLoads() {
-    }
+    void contextLoads() {}
 }

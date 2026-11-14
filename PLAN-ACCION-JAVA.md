@@ -293,3 +293,14 @@ real para Java.
     sin él `copier update` y `language`/`project_slug` estaban rotos).
   - Verificado en render limpio: doctor 8/8 Java, `next_version=0.1.1`,
     untracked detectado, `harness next` propone SCOPE-001 Java.
+
+- **H1 — EN CURSO.**
+  - A1.1 (fase A) **COMPLETADA**: JaCoCo con umbral `${coverage.min}`,
+    Spotless (palantir) en `verify`, test semilla `DemoJobTest`. Verificado en
+    render batch y web (exit 0 en ambos).
+  - A1.2 **COMPLETADA**: workflow Java condicional en el template (JDK de la
+    respuesta, caché Maven, JaCoCo artifact) + job `smoke-java` en la CI de
+    dskit. YAML validado y render sin restos Jinja.
+  - **Pendiente H1:** A1.1b (PIT, Checkstyle/PMD, Trivy/SBOM) y A1.3
+    (reescritura/poda de agentes + fórmulas de conteo).
+  - H2–H4 pendientes.

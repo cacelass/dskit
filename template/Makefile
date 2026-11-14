@@ -591,7 +591,7 @@ info:
 	@echo ""
 {% else %}
 # Makefile Java — fachada fina sobre ./mvnw (D6 del spec JAVA: cero logica propia)
-.PHONY: help setup init test verify check compile clean \
+.PHONY: help setup init test verify check compile lint format security mutation clean \
         agents-list agents-doctor agents-eval backlog prompts-sync prompts-check \
         skills assistants-sync
 
@@ -639,6 +639,18 @@ check: verify
 
 compile:
 	@$(MVNW) -q compile
+
+lint:
+	@$(MVNW) -q spotless:check
+
+format:
+	@$(MVNW) -q spotless:apply
+
+security:
+	@echo "  (pendiente: Trivy/SBOM — A1.1b)"
+
+mutation:
+	@echo "  (pendiente: PIT — A1.1b)"
 
 clean:
 	@$(MVNW) clean
