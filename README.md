@@ -153,13 +153,14 @@ make agents-eval     # harness + contracts
 |---|---|
 | JAVA-001 — template Java (Maven, Spring Boot/Batch, H2, Flyway, wrapper) | Hecha |
 | JAVA-002 — puerta `./mvnw verify` + `contextLoads` | Hecha |
-| JAVA-003 — plantillas de backlog Java | Pendiente |
-| JAVA-005..011 — agentes Java: batch, migrations, security, api, architecture, observabilidad | Pendiente |
-| JAVA-012 — pipeline de calidad (JaCoCo, Spotless, PIT, OWASP) | Pendiente |
-| JAVA-013 — CI del template Java | Pendiente |
+| JAVA-003 — backlog semilla Java | Hecha |
+| JAVA-005a — agentes language-aware (commit/doctor/env) | Hecha |
+| JAVA-005b..011 — agentes Java: test/dependency/cicd/make/doc/plan, batch, migrations, security, api, architecture, observabilidad | Pendiente |
+| JAVA-012 — pipeline de calidad (JaCoCo + Spotless hechos; PIT/Trivy pendientes) | En curso |
+| JAVA-013 — CI del template Java + `smoke-java` | Hecha |
 
-Alcance completo y criterios: [SPEC-JAVA.md](SPEC-JAVA.md) ·
-[PLAN-JAVA.md](PLAN-JAVA.md).
+Alcance y criterios: [SPEC-JAVA.md](SPEC-JAVA.md) · estado y prioridades:
+[ROADMAP.md](ROADMAP.md).
 
 El árbol Python original de la plantilla sigue disponible con
 `language: python`, pero este fork no lo mantiene como foco.
@@ -177,8 +178,8 @@ conservan la licencia y el aviso de copyright de la obra original.
 Este fork se publica en
 **[https://github.com/Pedro0020/dskit-JAVA](https://github.com/Pedro0020/dskit-JAVA)**
 y está mantenido por **poganmart** desde 2026. Los cambios respecto al
-original se detallan en [NOTICE](NOTICE), [CREDITS.md](CREDITS.md),
-[SPEC-JAVA.md](SPEC-JAVA.md) y [PLAN-JAVA.md](PLAN-JAVA.md).
+original se detallan en [NOTICE](NOTICE), [CREDITS.md](CREDITS.md) y
+[SPEC-JAVA.md](SPEC-JAVA.md).
 
 Si reutilizas este trabajo, mantén también la atribución a la obra original.
 

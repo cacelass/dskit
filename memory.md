@@ -4,6 +4,12 @@ Instrucciones, correcciones y preferencias guardadas por el usuario para recorda
 
 ---
 
+## Flujo de trabajo (Nov 2026)
+
+- **Una rama por tarea**: crear `feat/…`, `fix/…` o `chore/…` desde `main`; nunca trabajar directamente en `main`.
+- **Al terminar**: push de la rama y abrir PR. Si `gh` no está instalado, dar la URL de compare de GitHub.
+- Los documentos de planificación de una sesión (planes, informes E2E) no se acumulan en la raíz: lo accionable va a `ROADMAP.md`, lo duradero a `SPEC-JAVA.md` y el resto queda en el historial de git.
+
 ## Commits
 
 - Usar mensajes convencionales (feat:, fix:, chore:, docs:)
@@ -348,7 +354,7 @@ dependencias, siguiendo la filosofía de `template/.opencode/agents/lider.md`
 
 ## Java: adaptación del arnés (Nov 2026)
 
-- Spec en `SPEC-JAVA.md` (JAVA-001..015) y plan en `PLAN-JAVA.md`. Decisión
+- Spec en `SPEC-JAVA.md` (JAVA-001..015) y estado del plan en `ROADMAP.md`. Decisión
   **A1**: un solo árbol `template/` con variable `language` (python|java);
   el foso de gobierno no se duplica. Spike de Fase 0: núcleo con **0 líneas
   cambiadas**, harness eval **14/14**, contracts PASS, puerta `mvnw verify` +
@@ -378,7 +384,7 @@ dependencias, siguiendo la filosofía de `template/.opencode/agents/lider.md`
 - Verificación local: `uvx copier copy --trust --defaults --skip-tasks
   --data-file <java.yml> <src> <dst>` con `src` copiado a /tmp SIN `.git`
   (regla del mirror); puerta con Git Bash (`bash ./init.sh`).
-- **E2E Nov 2026** (procesador de pedidos, `TEST-PLAN-JAVA.md`): corregidos
+- **E2E Nov 2026** (procesador de pedidos; informe en el historial de git): corregidos
   H2 en test si `db != h2`, auto-run de jobs en tests
   (`spring.batch.job.enabled: false`), gate con Git Bash en Windows
   (`_bash_command`), `fcntl` ausente en Windows (fail-open), multi-job

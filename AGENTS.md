@@ -14,6 +14,7 @@
 - **Read before edit.** Always read a file before editing it.
 - **Verify your work.** Run lint/typecheck/tests after changes.
 - **Commit discipline.** Only commit when explicitly asked. Don't force-push. Write concise commit messages matching repo style.
+- **Branch per task.** Create a `feat/…`, `fix/…` or `chore/…` branch from `main`; when done, push it and open a PR (or provide the GitHub compare URL if `gh` is unavailable).
 - **Security.** Never log, expose, or commit secrets or keys.
 - **Proactive but not surprising.** Do the right thing, but don't take actions without explanation.
 

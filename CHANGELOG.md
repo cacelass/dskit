@@ -12,7 +12,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
 - Fork `Pedro0020/dskit-JAVA` (basado en dskit de cacelass): variable
   `language` (python | java), árbol Java con Spring Boot / Spring Batch,
   puerta `./mvnw verify` + `contextLoads` y gating de agentes por lenguaje.
-  Detalle en [SPEC-JAVA.md](SPEC-JAVA.md) y [PLAN-JAVA.md](PLAN-JAVA.md).
+  Detalle en [SPEC-JAVA.md](SPEC-JAVA.md) y [ROADMAP.md](ROADMAP.md).
 
 ## [No publicado]
 

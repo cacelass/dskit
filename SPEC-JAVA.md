@@ -2,7 +2,7 @@
 
 Estado: propuesta (v0.1) · sin implementar
 Backlog: JAVA-001..JAVA-015 (ver ROADMAP.md)
-Plan de implementación: PLAN-JAVA.md (fases, dependencias, verificación)
+Backlog y estado: ROADMAP.md
 
 ---
 

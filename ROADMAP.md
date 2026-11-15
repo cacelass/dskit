@@ -8,15 +8,34 @@ del `lider`: primero al backlog, después se implementa con TDD y evidencia.
 
 ### JAVA-001..JAVA-015 — Adaptación del arnés a Java (Spring Boot / Spring Batch)
 
-Spec completo en `SPEC-JAVA.md` (SCOPE, decisiones previas, criterios por
-feature, fases). Plan de implementación en `PLAN-JAVA.md` (spike de Fase 0
-para decidir la arquitectura física, dependencias, matriz de verificación).
-Plan de acción tras la prueba E2E en `PLAN-ACCION-JAVA.md` (prioridades P0-P4,
-hitos y próximo paso). Resumen de las piezas: template copier Java, puerta
-`./mvnw verify` + `contextLoads`, pipeline de calidad JVM (Spotless, JaCoCo,
-PIT, OWASP), reescritura de 10 agentes del núcleo, poda de los 4 de DS, y 6
-dominios nuevos de primera clase (batch, migrations, security, api,
-architecture, observabilidad).
+Spec con decisiones y criterios: `SPEC-JAVA.md`. Estado y prioridad:
+
+| ID | Tema | Estado | Prioridad |
+|----|------|--------|-----------|
+| JAVA-001 | Template copier Java (Maven, Spring Boot/Batch, H2, Flyway, wrapper) | Hecha | — |
+| JAVA-001b | Build tool Gradle | Pendiente | P4 |
+| JAVA-002 | Puerta `./mvnw verify` + `contextLoads` | Hecha | — |
+| JAVA-003 | Backlog semilla Java | Hecha | — |
+| JAVA-004 | Prompts Java (lider/explorer/implementer/reviewer) | Pendiente | P3 |
+| JAVA-005a | Fixes language-aware (commit/doctor/env/untracked) | Hecha | — |
+| JAVA-005b | Reescritura y poda de agentes (test/dependency/cicd/make/doc/plan) | Pendiente | P1 |
+| JAVA-006 | Agente `batch` | Pendiente | P2 |
+| JAVA-007 | Agente `migrations` | Pendiente | P2 |
+| JAVA-008 | Agente `security` | Pendiente | P2 |
+| JAVA-009 | Agente `api` Spring | Pendiente | P2 |
+| JAVA-010 | Agente `architecture` (ArchUnit) | Pendiente | P2 |
+| JAVA-011 | Agente `ops` / observabilidad | Pendiente | P2 |
+| JAVA-012 | Pipeline de calidad JVM: JaCoCo + Spotless (fase A) | Hecha | — |
+| JAVA-012b | PIT + Error Prone + Trivy/SBOM (fase B) | Pendiente | P1 |
+| JAVA-013 | CI Java del template + `smoke-java` | Hecha | — |
+| JAVA-014 | Rúbrica Java (checks en `init.sh` + R-criterios) | Pendiente | P3 |
+| JAVA-015 | DX: reviewer como PR check, IntelliJ, fricción | Pendiente | P3 |
+| — | Eliminar el árbol Python (si se aprueba) | Pendiente | P4 |
+| — | Segunda ronda E2E (Postgres real, JDK 21, `copier update`) | Pendiente | P4 |
+
+Hitos: **H0** completado (backlog Java, fixes language-aware, v2.0.0);
+**H1** en curso (fase A y CI hechos; faltan PIT/Trivy y poda de agentes);
+H2–H4 pendientes.
 
 Decisiones previas: plano de control Python + template Java (sin port a JVM),
 núcleo de gobierno intacto, RAG no se toca. Los dominios críticos

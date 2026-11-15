@@ -23,7 +23,7 @@ Cambios principales respecto a la obra original
 - Puerta `init.sh` con JDK, wrapper y `./mvnw verify` + contextLoads.
 - Makefile Java como fachada fina sobre `./mvnw`.
 - Validadores de CI con combos Java fijados y normalizacion de rutas.
-- Spec y plan de la adaptacion: SPEC-JAVA.md y PLAN-JAVA.md.
+- Spec de la adaptacion: SPEC-JAVA.md. Backlog y estado: ROADMAP.md.
 - En curso: poda/reescritura de agentes del nucleo, dominios batch,
   migrations, security, api, architecture y observabilidad, y CI Java.
 
