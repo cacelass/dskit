@@ -6,6 +6,8 @@ __pycache__/
 *$py.class
 *.so
 *.pyd
+.ruff_cache/
+.mypy_cache/
 
 # --- Entornos virtuales ---
 .venv/
@@ -121,6 +123,7 @@ runs/
 !.vscode/launch.json
 *.sublime-project
 *.sublime-workspace
+.claude/settings.local.json
 
 # --- Sistema operativo ---
 .DS_Store

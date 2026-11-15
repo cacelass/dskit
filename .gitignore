@@ -17,16 +17,24 @@ dist/
 *.egg
 .eggs/
 *.whl
+.ruff_cache/
+.mypy_cache/
 
 # --- Tests ---
 .pytest_cache/
 htmlcov/
 .coverage
 .coverage.*
+coverage.xml
+.hypothesis/
+.tox/
+
+# --- Logs ---
+*.log
 
 # --- IDE ---
 .idea/
-.vscode/
+/.vscode/
 *.swp
 *.swo
 *~
@@ -43,5 +51,5 @@ Thumbs.db
 
 # --- Git ---
 !.well-known/
-uv
-gh
+/uv
+/gh
